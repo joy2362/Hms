@@ -1,27 +1,41 @@
 <?php
 include_once 'database.php';
 include('session.php');
-
+include('appointmentHandler.php');
+$appointment = new Appointment();
 $db=new Database();
-$session = new Session();
 
-$session->init();
-$id=$session->get("id");
-
+Session::init();
+$id=Session::get("id");
+if (isset($_GET['doctor'])) {
+  $doctor=$_GET['doctor'];
+  try {
+   $query = $db->conn->prepare("select * from doctor_info where doctor_name ='$doctor'");
+    $query->execute();
+    $doctorInfo=$query->fetch(PDO::FETCH_ASSOC);
+  
+} catch (PDOException $e) {
+    die("Somthing is wrong " . $e->getMessage());
+}
+}
 if (isset($_GET['action']) && $_GET['action']=="logout") {
   $session->destroy();
 }
 
-if (!isset($_GET['action']) && !$_GET['action']=="logout") {
-  $session->destroy();
+try {
+   $query = $db->conn->prepare("select * from user_info where user_id='$id'");
+    $query->execute();
+    $result=$query->fetch(PDO::FETCH_ASSOC);
+  
+} catch (PDOException $e) {
+    die("Somthing is wrong " . $e->getMessage());
 }
 
-if (!isset($id)) {
-      header("location:index.php");
-    }else{
-      $query = $db->conn->prepare("select * from user_info where user_id='$id'");
-      $query->execute();
-    }
+ if(isset($_POST['appointment'] ) && $_SERVER['REQUEST_METHOD'] === 'POST'){
+  $confirm = $appointment->setAppointment($_POST);
+  echo $_POST['doctorName'];
+}
+
     
 ?>
 <!DOCTYPE html>
@@ -110,7 +124,7 @@ if (!isset($id)) {
         </div>
       </div>
     </section>
-		
+  
 		<section class="ftco-section ftco-no-pt ftco-no-pb ftco-counter img" id="section-counter" style="background-image: url(images/bg_3.jpg);" data-stellar-background-ratio="0.5">
     	<div class="container">
     		<div class="row">
@@ -120,58 +134,65 @@ if (!isset($id)) {
 	            <h2 class="mb-4">Free Consultation</h2>
 	            <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
 	          </div>
-	          <form action="#" class="appointment-form ftco-animate">
+            <?php
+              if (isset($confirm)) {
+                echo $confirm;
+              }
+              ?>
+	          <form action="" class="appointment-form ftco-animate" method="post">
 	    				<div class="d-md-flex">
 		    				<div class="form-group">
-		    					<input type="text" class="form-control" placeholder="First Name">
+		    					<input type="text" class="form-control" name="fname" value="<?php echo $result['full_name']?>" >
 		    				</div>
 		    				<div class="form-group ml-md-4">
-		    					<input type="text" class="form-control" placeholder="Last Name">
+		    					<input type="text" class="form-control" name="email"  value="<?php echo $result['email']?>" >
 		    				</div>
 	    				</div>
 	    				<div class="d-md-flex">
-	    					<div class="form-group">
-		    					<div class="form-field">
-          					<div class="select-wrap">
-                      <div class="icon"><span class="ion-ios-arrow-down"></span></div>
-                      <select name="" id="" class="form-control">
-                      	<option value="">Select Your Services</option>
-                        <option value="">Neurology</option>
-                        <option value="">Cardiology</option>
-                        <option value="">Dental</option>
-                        <option value="">Ophthalmology</option>
-                        <option value="">Other Services</option>
-                      </select>
-                    </div>
-		              </div>
-		    				</div>
+	    					<div class="form-group ">
+                  <input type="text" class="form-control" name="phone" value="<?php echo $result['phone']?>" >
+                </div>
 	    					<div class="form-group ml-md-4">
-		    					<input type="text" class="form-control" placeholder="Phone">
+		    					<input type="text" class="form-control" name="gender"  value="<?php echo $result['gender']?>" >
 		    				</div>
 	    				</div>
+              <div class="d-md-flex">
+                <div class="form-group">
+                  <input type="text" class="form-control" name="doctorName" value="<?php echo $doctorInfo['doctor_name']?>" >
+                </div>
+                <div class="form-group ml-md-4">
+                  <input type="text" class="form-control" name="department" value="<?php echo $doctorInfo['department']?>">
+                </div>
+              </div>
 	    				<div class="d-md-flex">
 		    				<div class="form-group">
 		    					<div class="input-wrap">
 		            		<div class="icon"><span class="ion-md-calendar"></span></div>
-		            		<input type="text" class="form-control appointment_date" placeholder="Date">
+		            		<input type="text" class="form-control appointment_date" name="appointmentDate" value="<?php echo date("Y-m-d");?>" >
 	            		</div>
 		    				</div>
 		    				<div class="form-group ml-md-4">
 		    					<div class="input-wrap">
 		            		<div class="icon"><span class="ion-ios-clock"></span></div>
-		            		<input type="text" class="form-control appointment_time" placeholder="Time">
+		            		<input type="text" name="appointmentTime" class="form-control appointment_time" placeholder="Time">
 	            		</div>
 		    				</div>
 	    				</div>
 	    				<div class="d-md-flex">
 	    					<div class="form-group">
-		              <textarea name="" id="" cols="30" rows="2" class="form-control" placeholder="Message"></textarea>
+		              <textarea  cols="30" rows="2" name="Prob" class="form-control" placeholder="Problem"></textarea>
 		            </div>
+
+                <input type="hidden" name="status" value="pending">
+                <input type="hidden" name="user_id" value="<?php echo $result['user_info_id']?>">
+
 		            <div class="form-group ml-md-4">
-		              <input type="submit" value="Appointment" class="btn btn-secondary py-3 px-4">
+		              <input type="submit" name="appointment" class="btn btn-secondary py-3 px-4">
 		            </div>
 	    				</div>
 	    			</form>
+
+
     			</div>
     			<div class="col-lg-6 p-5 bg-counter aside-stretch">
 						<h3 class="vr">About Dr.Care Facts</h3>
@@ -338,6 +359,6 @@ if (!isset($id)) {
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
   <script src="js/google-map.js"></script>
   <script src="js/main.js"></script>
-    
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   </body>
 </html>
