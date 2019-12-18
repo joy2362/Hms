@@ -61,11 +61,11 @@
 	      <div class="collapse navbar-collapse" id="ftco-nav">
 	        <ul class="navbar-nav mr-auto">
 	        	<li class="nav-item"><a href="index.php" class="nav-link pl-0">Home</a></li>
-	        	<li class="nav-item active"><a href="about.html" class="nav-link">About</a></li>
+	        	<li class="nav-item active"><a href="about.php" class="nav-link">About</a></li>
 	        	<li class="nav-item"><a href="doctor.html" class="nav-link">Doctor</a></li>
 	        	<li class="nav-item"><a href="department.html" class="nav-link">Departments</a></li>
 	        	<li class="nav-item"><a href="pricing.html" class="nav-link">Pricing</a></li>
-	        	<li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
+	        	<li class="nav-item"><a href="blog.php" class="nav-link">Blog</a></li>
 	          <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
 	        </ul>
 	      </div>

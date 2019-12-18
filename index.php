@@ -1,10 +1,11 @@
 <?php
+include('database.php');
+include('session.php');
 include('user.php');
+
 $user = new User();
 
-Session::init();
-$id=Session::get("id");
-echo $id;
+$id=$user->checkSession("id");
 
 if (isset($_GET['action']) && $_GET['action']=="logout") {
 	Session::destroy();
@@ -76,20 +77,18 @@ if (isset($_GET['action']) && $_GET['action']=="logout") {
 	      <div class="collapse navbar-collapse" id="ftco-nav">
 	        <ul class="navbar-nav mr-auto">
 	        	<li class="nav-item active"><a href="index.php" class="nav-link pl-0">Home</a></li>
-	        	<li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+	        	<li class="nav-item"><a href="about.php" class="nav-link">About</a></li>
 	        	<li class="nav-item"><a href="doctor.php" class="nav-link">Doctor</a></li>
 	        	<li class="nav-item"><a href="department.html" class="nav-link">Departments</a></li>
 	        	<li class="nav-item"><a href="pricing.html" class="nav-link">Pricing</a></li>
 	        	<li class="nav-item"><a href="blog.php" class="nav-link">Blog</a></li>
 	          <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
 	          <?php
-	          	$id=Session::get("id");
 	          	$login=Session::get("login");
 	          	if ($login==0) {
 	          		?>
 	          		<li class="nav-item"><a href="signin.php" class="nav-link">Login</a></li>
 	          		<li class="nav-item"><a href="reg.php" class="nav-link">Registation</a></li>
-	          	
 	          	<?php	
 	          	}else{
 	          	?>
@@ -245,7 +244,7 @@ if (isset($_GET['action']) && $_GET['action']=="logout") {
 			<div class="overlay"></div>
 			<div class="container">
 				<div class="row">
-					<div class="col-md-9">
+					<div class="col-md-8">
 						<h2>We Provide Free Health Care Consultation</h2>
 						<p class="mb-0">Your Health is Our Top Priority with Comprehensive, Affordable medical.</p>
 						<p></p>

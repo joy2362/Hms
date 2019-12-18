@@ -1,9 +1,11 @@
 <?php
+include('database.php');
 include('user.php');
+
 $user=new User();
+
 if(isset($_POST['register'] ) && $_SERVER['REQUEST_METHOD'] === 'POST'){
 	$user_Reg=$user->userReg($_POST);
-	//echo $user_Reg;
 }
 ?>
 

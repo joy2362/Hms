@@ -4,29 +4,92 @@
 
   $db=new Database();
 
-  Session::init();
-  $id=Session::get("id");
-  echo $id;
-  $login= Session::get("login");
-    
-    if (isset($id)) {
+class UserProfile{
+  private $db;
+  
+  function __construct(){
+    $this->db=new Database();
+  }
+
+  public function getUser(){
+
+    Session::init();
+    $id=Session::get("id");
+    $login= Session::get("login");
+    $type= Session::get("type");
+
+   if ($id != "0" || $type != "normal") {
       try {
         $sql="select * from user_info where user_id='$id'";
-        $query = $db->conn->prepare($sql);
+        $query = $this->db->conn->prepare($sql);
         $query->execute();
-        $query = $db->conn->query($sql);
-        $result=$query->fetch(PDO::FETCH_ASSOC);        
+        return $query->fetch(PDO::FETCH_ASSOC); 
+
       } catch (PDOException $e) {
         die("somthing wrong".$e);
       }
       
     }else{
-      
-    header("location:index.php");
+     header("location:index.php");
     }
-    if (isset($_GET['action']) && $_GET['action']=="logout") {
-  Session::destroy();
+    
+  }
+  public function __call($name,$arg){
+    if($name == 'getAppointment')
+      switch(count($arg)){
+        case 0 : return 0 ;
+          case 1 :
+            try {
+              $sql="select * from appointment where user_info_id='$arg[0]'";
+              $query = $this->db->conn->prepare($sql);
+              $query->execute();  
+              return $query;      
+            } catch (PDOException $e) {
+                die("somthing wrong".$e);
+            };
+          case 2 :
+            try {
+              $sql="select * from appointment where user_info_id='$arg[0]' and status='$arg[1]'";
+              $query = $this->db->conn->prepare($sql);
+              $query->execute();  
+              return $query;      
+            } catch (PDOException $e) {
+              die("somthing wrong".$e);
+            };
+    }
+  }
+
+  public function getDoctorName($id){
+    try {
+        $sql="select * from doctor_info where doctor_info_id='$id'";
+        $query = $this->db->conn->prepare($sql);
+        $query->execute();  
+        if ($query->rowCount()==1) {
+          $result=$query->fetch(PDO::FETCH_ASSOC);
+
+          return $result['doctor_name'];
+        }     
+      } catch (PDOException $e) {
+        die("somthing wrong".$e);
+      }
+  }
+
+  public function CheckTime($time){
+    $dateTime = new DateTime($time);
+    if ($dateTime->diff(new DateTime)->format('%R') == '+') {
+      return 0;
+    }else{
+      return 1;
+    }
+  }
 }
+  $profile = new UserProfile();
+  $result=$profile->getUser();
+  $userInfoId=$result['user_info_id'];
+
+  if (isset($_GET['action']) && $_GET['action']=="logout") {
+    Session::destroy();
+}    
 ?>
 
 <!DOCTYPE html>
@@ -159,12 +222,119 @@
               <button class="tablinks" onclick="openCity(event, 'previous')">Previous Appoinment</button>
            </div>
           <div id="upcoming" class="tabcontent">
-
-            <p>No Upcoming appoinment</p>
+            <?php
+              $appointment=$profile->getAppointment($userInfoId);
+             if ($appointment->rowCount()<1) {
+               ?>
+               <p>No appointment found</p>
+               <?php
+             }else{
+              ?>
+              <table class="table">
+                <thead class="thead-light"> 
+                  <tr>
+                    <th>#</th>
+                    <th>Doctor</th>
+                    <th>Problem</th>
+                    <th>time</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+              <?php
+                while ($info = $appointment->fetch(PDO::FETCH_ASSOC)) {
+                    $docId = $info['Doctor_info_id'];
+                    $appointmentTime=$info['date']." ".$info['time'];
+                    $docName=$profile->getDoctorName($docId);
+                    $CheckTime=$profile->CheckTime($appointmentTime);
+                    if ($info['status'] =="pending" || $info['status']=="ready" ) {
+                     
+                  ?>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <?php echo $info['Appoinment_id']; ?>
+                        </td>
+                        <td>
+                          <?php   echo $docName; ?>
+                        </td>
+                         <td>
+                          <?php echo $info['Problem']; ?>
+                        </td>
+                        <td>
+                          <?php  echo $appointmentTime; ?>
+                        </td>
+                        <td>
+                          <?php echo $info['status']; ?>
+                        </td>
+                      </tr>
+                    </tbody>
+                  <?php
+              }
+                }
+                ?>
+                </table>
+                <?php
+             } 
+            ?>
+           
+            
           </div>
 
           <div id="previous" class="tabcontent">
-            <p>No recode found</p>
+             <?php
+              $status="complete";
+              $appointment=$profile->getAppointment($userInfoId,$status);
+            if ($appointment->rowCount()<1) {
+               ?>
+               <p>No appointment found</p>
+               <?php
+             }else{
+              ?>
+              <table class="table">
+                <thead class="thead-light"> 
+                  <tr>
+                    <th>#</th>
+                    <th>Doctor</th>
+                    <th>Problem</th>
+                    <th>time</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+              <?php
+                while ($info = $appointment->fetch(PDO::FETCH_ASSOC)) {
+                    $docId = $info['Doctor_info_id'];
+                    $docName=$profile->getDoctorName($docId);
+                    $CheckTime=$profile->CheckTime($appointmentTime);
+                    if ($info['status']==="complete") {
+                  ?>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <?php echo $info['Appoinment_id']; ?>
+                        </td>
+                        <td>
+                          <?php   echo $docName; ?>
+                        </td>
+                         <td>
+                          <?php echo $info['Problem']; ?>
+                        </td>
+                        <td>
+                          <?php echo $info['date']." ".$info['time']; ?>
+                        </td>
+                        <td>
+                          <?php echo $info['status']; ?>
+                        </td>
+                      </tr>
+                    </tbody>
+
+                  <?php
+                }
+              }
+                ?>
+                </table>
+                <?php
+             } 
+            ?>
           </div>
           </div> <!-- .col-md-8 -->
 
@@ -345,23 +515,24 @@
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
   <script src="js/google-map.js"></script>
   <script src="js/main.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   <script>
-function openCity(evt, cityName) {
-  var i, tabcontent, tablinks;
-  tabcontent = document.getElementsByClassName("tabcontent");
-  for (i = 0; i < tabcontent.length; i++) {
-    tabcontent[i].style.display = "none";
-  }
-  tablinks = document.getElementsByClassName("tablinks");
-  for (i = 0; i < tablinks.length; i++) {
-    tablinks[i].className = tablinks[i].className.replace(" active", "");
-  }
-  document.getElementById(cityName).style.display = "block";
-  evt.currentTarget.className += " active";
-}
+        function openCity(evt, cityName) {
+          var i, tabcontent, tablinks;
+          tabcontent = document.getElementsByClassName("tabcontent");
+          for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+          }
+          tablinks = document.getElementsByClassName("tablinks");
+          for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+          }
+          document.getElementById(cityName).style.display = "block";
+          evt.currentTarget.className += " active";
+        }
 
-// Get the element with id="defaultOpen" and click on it
-document.getElementById("defaultOpen").click();
+          // Get the element with id="defaultOpen" and click on it
+        document.getElementById("defaultOpen").click();
 </script>
    
     

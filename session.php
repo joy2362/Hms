@@ -15,7 +15,7 @@ class Session{
 		if (isset($_SESSION[$key])) {
 			return $_SESSION[$key];
 		}else{
-			return false;
+			return "0";
 		}
 	}
 	public static function destroy(){

@@ -1,6 +1,4 @@
 <?php
-include('session.php');
-include('database.php');
 
 class User 
 {
@@ -119,8 +117,13 @@ class User
 				Session::set("login",1);
 				Session::set("id" , $result['user_id']);
 				Session::set("type" , $result['user_type']);
-				//redirect to index
-				header('location:user_profile.php');
+				if ($result['user_type']=="normal") {
+					//redirect to profile
+					header('location:user_profile.php');
+				}elseif ($result['user_type']=="doctor") {
+					header('location:doctor_profile.php');
+				}
+				
 			 //if user or password not then shoe error
 			}else{
 				return "<div class=\"alert alert-danger\"><strong>Error </strong> Username or Password not match!!!</div>";
@@ -128,6 +131,15 @@ class User
 			//handle exception error
 		} catch (PDOException $e) {
 			die("somthing wrong " .$e->getMessage());
+		}
+	}
+	public function checkSession($data){
+		Session::init();
+		$result=Session::get($data);
+		if (isset($result)) {
+			return $result;
+		}else{
+			return 0;
 		}
 	}
 

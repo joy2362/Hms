@@ -1,5 +1,8 @@
 <?php
+include('session.php');
+include('database.php');
 include('user.php');
+
 $user=new User();
 
 if(isset($_POST['register'] ) && $_SERVER['REQUEST_METHOD'] === 'POST'){

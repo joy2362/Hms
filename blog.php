@@ -3,9 +3,7 @@ include_once 'database.php';
 include('session.php');
 
 $db=new Database();
-$session = new Session();
-$session->init();
-$id=$session->get("id");
+  
 if (isset($_GET['action']) && $_GET['action']=="logout") {
   $session->destroy();
 }
