@@ -39,12 +39,19 @@ if(isset($_POST['register'] ) && $_SERVER['REQUEST_METHOD'] === 'POST'){
 						<input type="password" name="pass" class="form-control" id="pass">
 					</div>
 					<input type="Submit" class="btn btn-outline-primary" name="register" value="Sign In">
-					<a href="forget_pass1.php">Forget password</a>
-					<a class="btn btn-danger float-right" href="signup.php">Sign up</a>		
+					<a href="#" id="forget">Forget password</a>
+					<a class="btn btn-danger float-right" href="reg.php">Sign up</a>		
 				</form>
 			</div>
 			<div class="col-sm-4"></div>
 		</div>
 	</div>
+	<script src="js/jquery.min.js"></script>
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	<script type="text/javascript">
+		$('#forget').on('click',function(){
+			swal("Sorry!!", "This feature not available!", "error");
+		})
+	</script>
 </body>
 </html>

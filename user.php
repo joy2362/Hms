@@ -119,12 +119,16 @@ class User
 				Session::set("type" , $result['user_type']);
 				if ($result['user_type']=="normal") {
 					//redirect to profile
-					header('location:user_profile.php');
-				}elseif ($result['user_type']=="doctor") {
+					header('location:normal_profile.php');
+				}elseif ($result['user_type'] == "doctor") {
 					header('location:doctor_profile.php');
+				}elseif ($result['user_type'] == "nurse") {
+					header('location:nurse_profile.php');
+				}elseif ($result['user_type'] == "accountant") {
+					header('location:account_profile.php');
 				}
 				
-			 //if user or password not then shoe error
+			 //if user or password not match then show error
 			}else{
 				return "<div class=\"alert alert-danger\"><strong>Error </strong> Username or Password not match!!!</div>";
 			}	
@@ -133,15 +137,5 @@ class User
 			die("somthing wrong " .$e->getMessage());
 		}
 	}
-	public function checkSession($data){
-		Session::init();
-		$result=Session::get($data);
-		if (isset($result)) {
-			return $result;
-		}else{
-			return 0;
-		}
-	}
-
 }
 ?>
