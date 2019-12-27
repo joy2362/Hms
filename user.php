@@ -27,7 +27,7 @@ class User
 
 		//send error message 
 		if($userCheck==1){
-			return "<div class=\"alert alert-danger\"><strong>Error </strong> Username already taken!!!</div>";
+			return "1";
 		}
 
 		#store the information and complete registation
@@ -63,8 +63,7 @@ class User
 					$com=$query->execute();
 					//if data store then show success message
 					if ($com) {
-						return "<div class=\"alert alert-success\"><strong>Success </strong> registation complete!!!<a href=\"index.php\">Go back</a> or
-							<a href=\"login/login.php\">Login</a></div>";
+						return "2";
 					}
 					//handle exception error
 				} catch (PDOException $e) {
@@ -72,7 +71,7 @@ class User
 				}
 				
 			}else{
-				return "<div class=\"alert alert-warning\"><strong>Error </strong> Somthing wrong try again</div>";
+				return "1";
 			}
 			//handle exception error
 		}catch(PDOException $e){
@@ -102,7 +101,13 @@ class User
 		//assign form data in variable
 		$username = $data['uname'];
 		$password= md5($data['pass']);
-
+		if ($username == "" && $data['pass'] == "") {
+			return "4";
+		}elseif ($username == "") {
+			return "1";
+		}elseif ($data['pass'] == "") {
+			return "2";
+		}
 		//match username and password with database 
 		try {
 			$sql="select * from user where uname=:username and password=:password";
@@ -117,20 +122,13 @@ class User
 				Session::set("login",1);
 				Session::set("id" , $result['user_id']);
 				Session::set("type" , $result['user_type']);
-				if ($result['user_type']=="normal") {
-					//redirect to profile
-					header('location:normal_profile.php');
-				}elseif ($result['user_type'] == "doctor") {
-					header('location:doctor_profile.php');
-				}elseif ($result['user_type'] == "nurse") {
-					header('location:nurse_profile.php');
-				}elseif ($result['user_type'] == "accountant") {
-					header('location:account_profile.php');
-				}
 				
+					//redirect to profile
+					header('location:'.$result['user_type'].'_profile.php');
+								
 			 //if user or password not match then show error
 			}else{
-				return "<div class=\"alert alert-danger\"><strong>Error </strong> Username or Password not match!!!</div>";
+				return "3";
 			}	
 			//handle exception error
 		} catch (PDOException $e) {

@@ -34,14 +34,11 @@ if(isset($_POST['register'] ) && $_SERVER['REQUEST_METHOD'] === 'POST'){
 				<div class="form-left">
 					<h2>General Infomation</h2>
 					<div class="form-row">
-						<div class="alert alert-danger" id="alert_style">
-							<strong>Error </strong><span id="errorText"></span> 
-						</div>
-					</div>
-					<div class="form-row">
 						<?php
 						if (isset($user_Reg)) {
-							echo $user_Reg;
+							?>
+							 <div class="message" data-flashdata="<?php echo $user_Reg;?>"></div>
+						<?php
 						}
 						?>
 					</div>
@@ -106,11 +103,19 @@ if(isset($_POST['register'] ) && $_SERVER['REQUEST_METHOD'] === 'POST'){
 		</div>
 	</div>
 	<script type="text/javascript" src="js/validation.js"></script>
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 	<script>
 		$(".custom-file-input").on("change", function() {
   		var fileName = $(this).val().split("\\").pop();
   		$(this).siblings(".custom-file-label").addClass("selected").html(fileName);
 		});
+		const flashdata=$('.message').data('flashdata');
+		if (flashdata==1) {
+  			swal("Error!", "Username already taken!", "error");
+		}
+		if (flashdata==2) {
+  			swal("Success!", "Registation Complete!", "success");
+		}
 	</script>
 </body>
 </html>

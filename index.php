@@ -1,16 +1,20 @@
 <?php
+//include file
 include('database.php');
 include('session.php');
-
+//start session and set user id and type
 Session::init();
 $id=Session::get("id");
 $type=Session::get("type");
-
+//create database object
 $db=new Database();
+//check if logout call or not if call then destroy session
 if (isset($_GET['action']) && $_GET['action']=="logout") {
 	Session::destroy();
 }
+//create index class
 class Index {
+	//create function to get details of blog 
 	public function getBlog($db){
 		try {
 	      $sql="select * from blog order by blog_id DESC LIMIT 3";
@@ -21,6 +25,7 @@ class Index {
       		die("somthing wrong " .$e->getMessage());
     	}
 	}
+	//return doctor info 
 	public function getDoctor($db){
 		try {
 	      $sql="select * from doctor_info order by doctor_info_id DESC LIMIT 4";
@@ -57,51 +62,19 @@ class Index {
 
     <link rel="stylesheet" href="css/bootstrap-datepicker.css">
     <link rel="stylesheet" href="css/jquery.timepicker.css">
-
     
     <link rel="stylesheet" href="css/flaticon.css">
     <link rel="stylesheet" href="css/icomoon.css">
     <link rel="stylesheet" href="css/style.css">
   </head>
   <body>
-  	<?php
-  	include('topHeader.php');
-  	?>
-	  <nav class="navbar navbar-expand-lg navbar-dark bg-dark ftco-navbar-light" id="ftco-navbar">
-	    <div class="container d-flex align-items-center">
-				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-	        <span class="oi oi-menu"></span> Menu
-	      </button>
-
-	      <p class="button-custom order-lg-last mb-0"><a href="appointment.html" class="btn btn-secondary py-2 px-3">Make An Appointment</a></p>
-	     
-	      <div class="collapse navbar-collapse" id="ftco-nav">
-	        <ul class="navbar-nav mr-auto">
-	        	<li class="nav-item active"><a href="index.php" class="nav-link pl-0">Home</a></li>
-	        	<li class="nav-item"><a href="about.php" class="nav-link">About</a></li>
-	        	<li class="nav-item"><a href="doctor.php" class="nav-link">Doctor</a></li>
-	        	<li class="nav-item"><a href="department.html" class="nav-link">Departments</a></li>
-	        	<li class="nav-item"><a href="pricing.html" class="nav-link">Pricing</a></li>
-	        	<li class="nav-item"><a href="blog.php" class="nav-link">Blog</a></li>
-	          <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-	          <?php
-	          	$login=Session::get("login");
-	          	if ($login==0) {
-	          		?>
-	          		<li class="nav-item"><a href="signin.php" class="nav-link">Login</a></li>
-	          		<li class="nav-item"><a href="reg.php" class="nav-link">Registation</a></li>
-	          	<?php	
-	          	}else{
-	          	?>
-	          		<li class="nav-item"><a href="<?php echo $type;?>_profile.php" class="nav-link">Profile</a></li>
-					<li class="nav-item"><a href="?action=logout" class="nav-link">Log out</a></li>
-	          	<?php
-	          	}
-	          ?>
-	        </ul>
-	      </div>
-	    </div>
-	  </nav>
+  	 <?php
+    include 'topHeader.php';
+    ?>
+    <?php
+    $page="index";
+     include 'navbar.php';
+    ?>
     <!-- END nav -->
     
     <section class="home-slider owl-carousel">

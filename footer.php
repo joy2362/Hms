@@ -6,7 +6,6 @@
     } catch (PDOException $e) {
       die("somthing wrong " .$e->getMessage());
     }
-     
   ?>
 
   <footer class="ftco-footer ftco-bg-dark ftco-section">
@@ -61,7 +60,6 @@
               <h2 class="ftco-heading-2">Recent Blog</h2>
               <?php
               while ($info = $query->fetch(PDO::FETCH_ASSOC)){
-                
                 ?>
               <div class="block-21 mb-4 d-flex">
                 <a class="blog-img mr-4" style="background-image: url(<?php echo $info['picture'];?>);"></a>

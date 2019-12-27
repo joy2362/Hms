@@ -2,7 +2,7 @@
   include('database.php');
   include('session.php');
 
-  $db=new Database();
+$db=new Database();
 
 class Accountant{
   
@@ -69,6 +69,7 @@ class Accountant{
 }
   $profile = new Accountant();
   $result=$profile->getAccount($db);
+  $type=Session::get("type");
   $accountantId=$result['accountant_id'];
 
 if (isset($_GET['Aid'])) {
@@ -110,52 +111,13 @@ if (isset($_GET['action']) && $_GET['action']=="logout") {
     <link rel="stylesheet" href="css/style.css">
   </head>
   <body>
-    <nav class="navbar py-4 navbar-expand-lg ftco_navbar navbar-light bg-light flex-row">
-      <div class="container">
-        <div class="row no-gutters d-flex align-items-start align-items-center px-3 px-md-0">
-          <div class="col-lg-2 pr-4 align-items-center">
-            <a class="navbar-brand" href="index.html">Dr.<span>care</span></a>
-          </div>
-          <div class="col-lg-10 d-none d-md-block">
-            <div class="row d-flex">
-              <div class="col-md-4 pr-4 d-flex topper align-items-center">
-                <div class="icon bg-white mr-2 d-flex justify-content-center align-items-center"><span class="icon-map"></span></div>
-                <span class="text">Address: 198 West 21th Street, Suite 721 New York NY 10016</span>
-              </div>
-              <div class="col-md pr-4 d-flex topper align-items-center">
-                <div class="icon bg-white mr-2 d-flex justify-content-center align-items-center"><span class="icon-paper-plane"></span></div>
-                <span class="text">Email: youremail@email.com</span>
-              </div>
-              <div class="col-md pr-4 d-flex topper align-items-center">
-                <div class="icon bg-white mr-2 d-flex justify-content-center align-items-center"><span class="icon-phone2"></span></div>
-                <span class="text">Phone: + 1235 2355 98</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </nav>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark ftco-navbar-light" id="ftco-navbar">
-      <div class="container d-flex align-items-center">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="oi oi-menu"></span> Menu
-        </button>
-        <p class="button-custom order-lg-last mb-0"><a href="appointment.html" class="btn btn-secondary py-2 px-3">Make An Appointment</a></p>
-        <div class="collapse navbar-collapse" id="ftco-nav">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item"><a href="index.php" class="nav-link pl-0">Home</a></li>
-            <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
-            <li class="nav-item"><a href="doctor.php" class="nav-link">Doctor</a></li>
-            <li class="nav-item"><a href="department.html" class="nav-link">Departments</a></li>
-            <li class="nav-item"><a href="pricing.html" class="nav-link">Pricing</a></li>
-            <li class="nav-item "><a href="blog.php" class="nav-link">Blog</a></li>
-            <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-            <li class="nav-item "><a href="user_profile.php" class="nav-link">Profile</a></li>
-            <li class="nav-item"><a href="?action=logout" class="nav-link">Log out</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+    <?php
+    include 'topHeader.php';
+    ?>
+    <?php
+    $page="profile";
+     include 'navbar.php';
+    ?>
     <!-- END nav -->
     
     <section class="hero-wrap hero-wrap-2" style="background-image: url('images/bg_1.jpg');" data-stellar-background-ratio="0.5">
@@ -176,7 +138,7 @@ if (isset($_GET['action']) && $_GET['action']=="logout") {
           <div class="col-lg-8 ftco-animate">
             <img src="<?php echo $result['propic'];?>" class="rounded"style="width:50%">
             <h2 class=""> <?php echo $result['name'];?> </h2>
-             <p class=""> <?php echo $result['phone'];?> </p>
+             <p class=""> <?php echo $result['phone'];?></p>
               
              <?php
              if (isset($updateAppointment)) {
@@ -186,7 +148,6 @@ if (isset($_GET['action']) && $_GET['action']=="logout") {
              }
              ?>
              <h2>Appointment</h2>
-             
                 <?php
                 $appointment=$profile->getAppointment($db);
                 if ($appointment->rowCount()<1) {
@@ -280,8 +241,6 @@ if (isset($_GET['action']) && $_GET['action']=="logout") {
 <?php
   include('footer.php');
 ?>
-  
-
   <!-- loader -->
   <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
 

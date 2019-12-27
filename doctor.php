@@ -1,17 +1,45 @@
 <?php
 include_once 'database.php';
 include('session.php');
+if (isset($_GET['department'])) {
+  $department=$_GET['department'];
+}
+
+class Doctor{
+  
+ public function __call($name,$arg){
+  if($name == 'getDoctor'){
+    switch(count($arg)){
+      case 1 :
+        $query = $arg[0]->conn->prepare("select * from doctor_info");
+        $query->execute();
+        return $query->rowCount();
+      case 2 :
+        $query = $arg[0]->conn->prepare("select * from doctor_info where department='$arg[1]'");
+        $query->execute();
+        return $query->rowCount();
+    }
+  }
+ }
+}
 
 $db=new Database();
-$session = new Session();
-$session->init();
-$id=$session->get("id");
+$getInfo=new Doctor();
+
+Session::init();
+$id=Session::get("id");
+
 if (isset($_GET['action']) && $_GET['action']=="logout") {
-  $session->destroy();
+  Session::destroy();
 }
-$query = $db->conn->prepare("select * from doctor_info");
-$query->execute();
-$totalfile=$query->rowCount();
+
+if (isset($department)) {
+  $department=strtoupper($department);
+  $totalfile=$getInfo->getDoctor($db,$department);
+}else{
+  $totalfile=$getInfo->getDoctor($db);
+}
+
 $result_per_page=12;
 $number_of_page=ceil($totalfile/$result_per_page);
 if (!isset($_GET['page'])) {
@@ -20,14 +48,26 @@ if (!isset($_GET['page'])) {
   $page=$_GET['page'];
 }
 $this_page_first_result=($page-1)*$result_per_page;
-try {
-      $sql="select * from doctor_info order by doctor_info_id desc
-      limit ".$this_page_first_result .",".$result_per_page;
-      $query = $db->conn->prepare($sql);
-      $query->execute();
-    } catch (PDOException $e) {
-      die("somthing wrong " .$e->getMessage());
-    }
+if (isset($department)) {
+ try {
+  $sql="select * from doctor_info where department='$department' order by doctor_info_id desc
+  limit ".$this_page_first_result .",".$result_per_page." ";
+  $query = $db->conn->prepare($sql);
+  $query->execute();
+} catch (PDOException $e) {
+  die("somthing wrong " .$e->getMessage());
+}
+}else{
+  try {
+  $sql="select * from doctor_info order by doctor_info_id desc
+  limit ".$this_page_first_result .",".$result_per_page;
+  $query = $db->conn->prepare($sql);
+  $query->execute();
+} catch (PDOException $e) {
+  die("somthing wrong " .$e->getMessage());
+}
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -57,68 +97,24 @@ try {
     <link rel="stylesheet" href="css/flaticon.css">
     <link rel="stylesheet" href="css/icomoon.css">
     <link rel="stylesheet" href="css/style.css">
+    <style type="text/css">
+      .btn.active {
+        background-color: #666;
+        color: white;
+      }
+      .filter{
+        margin-bottom: 20px;
+      }
+    </style>
   </head>
   <body>
-    <nav class="navbar py-4 navbar-expand-lg ftco_navbar navbar-light bg-light flex-row">
-    	<div class="container">
-    		<div class="row no-gutters d-flex align-items-start align-items-center px-3 px-md-0">
-    			<div class="col-lg-2 pr-4 align-items-center">
-		    		<a class="navbar-brand" href="index.html">Dr.<span>care</span></a>
-	    		</div>
-	    		<div class="col-lg-10 d-none d-md-block">
-		    		<div class="row d-flex">
-			    		<div class="col-md-4 pr-4 d-flex topper align-items-center">
-			    			<div class="icon bg-white mr-2 d-flex justify-content-center align-items-center"><span class="icon-map"></span></div>
-						    <span class="text">Address: 198 West 21th Street, Suite 721 New York NY 10016</span>
-					    </div>
-					    <div class="col-md pr-4 d-flex topper align-items-center">
-					    	<div class="icon bg-white mr-2 d-flex justify-content-center align-items-center"><span class="icon-paper-plane"></span></div>
-						    <span class="text">Email: youremail@email.com</span>
-					    </div>
-					    <div class="col-md pr-4 d-flex topper align-items-center">
-					    	<div class="icon bg-white mr-2 d-flex justify-content-center align-items-center"><span class="icon-phone2"></span></div>
-						    <span class="text">Phone: + 1235 2355 98</span>
-					    </div>
-				    </div>
-			    </div>
-		    </div>
-		  </div>
-    </nav>
-	  <nav class="navbar navbar-expand-lg navbar-dark bg-dark ftco-navbar-light" id="ftco-navbar">
-	    <div class="container d-flex align-items-center">
-				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-	        <span class="oi oi-menu"></span> Menu
-	      </button>
-	      <p class="button-custom order-lg-last mb-0"><a href="appointment.php" class="btn btn-secondary py-2 px-3">Make An Appointment</a></p>
-	      <div class="collapse navbar-collapse" id="ftco-nav">
-	        <ul class="navbar-nav mr-auto">
-	        	<li class="nav-item"><a href="index.php" class="nav-link pl-0">Home</a></li>
-	        	<li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
-	        	<li class="nav-item active"><a href="doctor.php" class="nav-link">Doctor</a></li>
-	        	<li class="nav-item"><a href="department.html" class="nav-link">Departments</a></li>
-	        	<li class="nav-item"><a href="pricing.html" class="nav-link">Pricing</a></li>
-	        	<li class="nav-item"><a href="blog.php" class="nav-link">Blog</a></li>
-	          <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-	           <?php
-              $id=Session::get("id");
-              $login=Session::get("login");
-              if ($login==0) {
-                ?>
-                <li class="nav-item"><a href="signin.php" class="nav-link">Login</a></li>
-                <li class="nav-item"><a href="reg.php" class="nav-link">Registation</a></li>
-              
-              <?php 
-              }else{
-              ?>
-                <li class="nav-item"><a href="user_profile.php" class="nav-link">Profile</a></li>
-                <li class="nav-item"><a href="?action=logout" class="nav-link">Log out</a></li>
-              <?php
-              }
-            ?>
-	        </ul>
-	      </div>
-	    </div>
-	  </nav>
+    <?php
+    include 'topHeader.php';
+    ?>
+    <?php
+      $page1="doctor";
+     include 'navbar.php';
+    ?>
     <!-- END nav -->
     
     <section class="hero-wrap hero-wrap-2" style="background-image: url('images/bg_1.jpg');" data-stellar-background-ratio="0.5">
@@ -135,12 +131,30 @@ try {
 		
 		<section class="ftco-section">
 			<div class="container">
+        <div class="filter">
+           <p>Department:</p>
+        <a href="doctor.php" class="btn btn-outline-primary <?php if(!isset($department))echo "active";?>">All</a>
+        <a href="doctor.php?department=Neurology" class="btn btn-outline-primary <?php if($_GET['department']==Neurology)echo "active";?>">Neurology</a>
+        <a href="doctor.php?department=Cardiology" class="btn btn-outline-primary <?php if($_GET['department']==Cardiology)echo "active";?>">Cardiology</a>
+        <a href="doctor.php?department=Surgery" class="btn btn-outline-primary <?php if($_GET['department']==Surgery)echo "active";?>">Surgery</a>
+         <a href="doctor.php?department=Dental" class="btn btn-outline-primary <?php if($_GET['department']==Dental)echo "active";?>">Dental</a>
+          <a href="doctor.php?department=Ophthalmology" class="btn btn-outline-primary <?php if($_GET['department']==Ophthalmology)echo "active";?>">Ophthalmology</a>
+        </div>
+       
 				  <?php
           $count=1;
+          if ($totalfile==0) {
+            ?>
+            <p class="text-center">no doctor found</p>
+            <div class="message" data-flashdata="<?php echo $totalfile;?>"></div>
+            <?php
+          }
             if ($query) {
              while ($doctor = $query->fetch(PDO::FETCH_ASSOC)) {
                 if($count %4 == 1){
-             echo "<div class=\"row\">";
+                  ?>
+             <div class="row">
+              <?php
             }
               ?>
 					<div class="col-md-6 col-lg-3 ftco-animate">
@@ -150,20 +164,23 @@ try {
 							</div>
 							<div class="text pt-3 text-center">
 								<h3><?php echo $doctor['doctor_name']?></h3>
-								<span class="position mb-2"><?php echo $doctor['department']?></span>
+								<span class="position mb-2 "><?php echo $doctor['department']?></span>
 								<div class="faded">
 									<p>Edication: <?php echo $doctor['education_background']?></p>
 									<p>Working Experience: <?php echo $doctor['experience']?> years</p>
+                  <p><a href="doctor-single.php?id=<?php echo $doctor['doctor_info_id']?>">View profile</a></P>
 									<ul class="ftco-social text-center">
-		               				 	<li class="ftco-animate"><a href="appointment.php?doctor=<?php echo $doctor['doctor_name']?>">Make An Appointment </a></li>
+		               	<li class="ftco-animate"><a href="appointment.php?doctor=<?php echo $doctor['doctor_name']?>">Make An Appointment </a></li>
 		             	</ul>
-	              				</div>
+	              </div>
 							</div>
 						</div>
 					</div>
 				 <?php
              if($count %4 == 0){
-            echo "</div>"; 
+              ?>
+            </div>
+            <?php
             }
             $count++;
             }
@@ -171,7 +188,7 @@ try {
           ?>
           </div>
           <?php
-              if ($totalfile == ($result_per_page+1)) {
+              if ($totalfile > $result_per_page+1) {
                 ?>
                 <ul class="pagination justify-content-center">
                 <?php
@@ -209,6 +226,12 @@ try {
 <?php
   include('javascriptLink.php');
 ?>
-    
-  </body>
+<script type="text/javascript">
+  const flashdata=$('.message').data('flashdata');
+  if (flashdata==0) {
+    swal("Sorry!", "No Doctor Available", "error");
+  }
+</script>
+
+</body>
 </html>

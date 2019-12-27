@@ -15,53 +15,59 @@ function validation()
 	//console.log(checkbox.value);
 
 	if (uname.value.trim() == "" && fname.value.trim() == "" && pass.value.trim() == "" && repass.value.trim() == "" && age.value.trim() == "" && gender.value == "gender" && email.value.trim() == "" && !checkbox.checked) {
-		document.getElementById('alert_style').style.display = 'block';
-		document.getElementById("errorText").innerHTML=" Fill the form first!!!";
+		swal("Sorry!", "Fill the form first!", "error");
 		uname.focus();
 		return false;
 	}else if (uname.value.trim()==""){
-		document.getElementById('alert_style').style.display = 'block';
-		document.getElementById("errorText").innerHTML="  username empty!!!";
+		swal("Sorry!", "Write username first!!!!", "error");
 		uname.focus();
 		return false;
 	}else if (fname.value.trim()==""){
-		document.getElementById('alert_style').style.display = 'block';
-		document.getElementById("errorText").innerHTML="  Full name empty!!!";
+		swal("Sorry!", "Write Full name first!!!!", "error");
 		fname.focus();
 		return false;
 	}else if (pass.value.trim()==""){
-		document.getElementById('alert_style').style.display = 'block';
-		document.getElementById("errorText").innerHTML="  password empty!!!";
+		swal("Sorry!", "Write password first!!!!", "error");
 		pass.focus();
 		return false;
 	}else if (repass.value.trim()==""){
-		document.getElementById('alert_style').style.display = 'block';
-		document.getElementById("errorText").innerHTML=" Repeat password empty!!!";
+		swal("Sorry!", "Write Repeat password first!!!!", "error");
 		repass.focus();
 		return false;
 	}else if (age.value.trim()==""){
-		document.getElementById('alert_style').style.display = 'block';
-		document.getElementById("errorText").innerHTML=" Age empty!!!";
-		Age.focus();
+		swal("Sorry!", "Write Age first!!!!", "error");
+		age.focus();
+		return false;
+	}else if (gender.value == "gender"){
+		swal("Sorry!", "Write Gender first!!!!", "error");
+		gender.focus();
+		return false;
+	}else if (address.value.trim()==""){
+		swal("Sorry!", "Write Address first!!!!", "error");
+		address.focus();
+		return false;
+	}else if (phone.value.trim()==""){
+		swal("Sorry!", "Write phone number first!!!!", "error");
+		phone.focus();
+		return false;
+	}else if (email.value.trim()==""){
+		swal("Sorry!", "Write email first!!!!", "error");
+		email.focus();
 		return false;
 	}else if (!checkbox.checked){
-		document.getElementById('alert_style').style.display = 'block';
-		document.getElementById("errorText").innerHTML=" Accept Terms and Condition!!!";
+		swal("Sorry!", "Accept Terms and Condition!!!!", "error");
 		checkbox.focus();
 		return false;
 	}else if (pass.value.trim() != repass.value.trim()){
-		document.getElementById('alert_style').style.display = 'block';
-		document.getElementById("errorText").innerHTML=" Password and repeat password not match!!!";
+		swal("Sorry!", "Password and repeat password not match!!!!", "error");
 		checkbox.focus();
 		return false;
 	}else if (uname.value.trim().length <5){
-		document.getElementById('alert_style').style.display = 'block';
-		document.getElementById("errorText").innerHTML=" Username Too short!!!";
+		swal("Sorry!", "Username Too short!!!!", "error");
 		checkbox.focus();
 		return false;
 	}else if (pass.value.trim().length <5){
-		document.getElementById('alert_style').style.display = 'block';
-		document.getElementById("errorText").innerHTML=" Password Too short!!!";
+		swal("Sorry!", "Password Too short!!!!", "error");
 		checkbox.focus();
 		return false;
 	}else{
