@@ -188,7 +188,7 @@ if (isset($department)) {
           ?>
           </div>
           <?php
-              if ($totalfile > $result_per_page+1) {
+              if ($totalfile > $result_per_page) {
                 ?>
                 <ul class="pagination justify-content-center">
                 <?php

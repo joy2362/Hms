@@ -201,9 +201,11 @@ if (isset($_GET['Aid'])) {
       <div class="container">
         <div class="row text-center">
           <div class="col-lg-8 ftco-animate">
-            <img src="<?php echo $result['pro_pic'];?>" class="rounded"style="width:50%">
+           <img src="<?php echo $result['pro_pic'];?>" style="width:300px;height:300px;border-radius: 50%;">
             <h2 class=""> <?php echo $result['doctor_name'];?> </h2>
-             <p class=""> <?php echo $result['phone'];?> </p>
+             <p class="">Phone: <?php echo $result['phone'];?> </p>
+             <p class="">Salary: <?php echo $result['salary'];?> tk</p>
+             <p class="">Duty time: <?php echo $result['start_duty_time'];?> - <?php echo $result['end_duty_time'];?></p>
              <?php
              if (isset($updateNurse)) {
               ?>
@@ -269,7 +271,6 @@ if (isset($_GET['Aid'])) {
             </div>
             <button class="accordion">Nurse</button>
             <div class="panel">
-
               <?php
                 $nurse=$profile->getNurse($db,"free");
                  if ($nurse->rowCount()<1) {
@@ -307,59 +308,11 @@ if (isset($_GET['Aid'])) {
                   <?php
                  }
               ?>
-
             </div>
-          
           </div> <!-- .col-md-8 -->
-
-          <div class="col-lg-4 sidebar ftco-animate">
-            <div class="sidebar-box ftco-animate">
-              <h3>Category</h3>
-              <ul class="categories">
-                <li><a href="#">Neurology <span>(6)</span></a></li>
-                <li><a href="#">Cardiology <span>(8)</span></a></li>
-                <li><a href="#">Surgery <span>(2)</span></a></li>
-                <li><a href="#">Dental <span>(2)</span></a></li>
-                <li><a href="#">Ophthalmology <span>(2)</span></a></li>
-              </ul>
-            </div>
-
-            <div class="sidebar-box ftco-animate">
-              <h3>Popular Articles</h3>
-              <div class="block-21 mb-4 d-flex">
-                <a class="blog-img mr-4" style="background-image: url(images/image_1.jpg);"></a>
-                <div class="text">
-                  <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about the blind texts</a></h3>
-                  <div class="meta">
-                    <div><a href="#"><span class="icon-calendar"></span> Oct. 04, 2018</a></div>
-                    <div><a href="#"><span class="icon-person"></span> Dave Lewis</a></div>
-                    <div><a href="#"><span class="icon-chat"></span> 19</a></div>
-                  </div>
-                </div>
-              </div>
-              <div class="block-21 mb-4 d-flex">
-                <a class="blog-img mr-4" style="background-image: url(images/image_2.jpg);"></a>
-                <div class="text">
-                  <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about the blind texts</a></h3>
-                  <div class="meta">
-                    <div><a href="#"><span class="icon-calendar"></span> Oct. 04, 2018</a></div>
-                    <div><a href="#"><span class="icon-person"></span> Dave Lewis</a></div>
-                    <div><a href="#"><span class="icon-chat"></span> 19</a></div>
-                  </div>
-                </div>
-              </div>
-              <div class="block-21 mb-4 d-flex">
-                <a class="blog-img mr-4" style="background-image: url(images/image_3.jpg);"></a>
-                <div class="text">
-                  <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about the blind texts</a></h3>
-                  <div class="meta">
-                    <div><a href="#"><span class="icon-calendar"></span> Oct. 04, 2018</a></div>
-                    <div><a href="#"><span class="icon-person"></span> Dave Lewis</a></div>
-                    <div><a href="#"><span class="icon-chat"></span> 19</a></div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <?php 
+              include('sideBar.php');
+            ?>
           </div><!-- END COL -->
         </div>
       </div>
@@ -370,8 +323,6 @@ if (isset($_GET['Aid'])) {
 ?>    
   <!-- loader -->
   <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
-
-
 <?php
   include('javascriptLink.php');
 ?>
@@ -395,7 +346,5 @@ if (flashdata) {
   swal("Success!", "Nurse is on the way!", "success");
 }
 </script>
-
-    
-  </body>
+</body>
 </html>

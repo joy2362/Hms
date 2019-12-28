@@ -38,14 +38,14 @@ class UserProfile{
     if($name == 'getAppointment')
       switch(count($arg)){
         case 0 : return 0 ;
-          case 1 :
+          case 3 :
             try {
-              $sql="select * from appointment where user_info_id='$arg[0]'";
+              $sql="select * from appointment where user_info_id='$arg[0]' and status='$arg[1]' and date >='$arg[2]'";
               $query = $this->db->conn->prepare($sql);
               $query->execute();  
               return $query;      
             } catch (PDOException $e) {
-                die("somthing wrong".$e);
+              die("somthing wrong".$e);
             };
           case 2 :
             try {
@@ -73,6 +73,17 @@ class UserProfile{
         die("somthing wrong".$e);
       }
   }
+  public function getTotalAppointment($id){
+     try {
+      $sql="select * from appointment where user_info_id='$id'";
+      $query = $this->db->conn->prepare($sql);
+      $query->execute();  
+      $result=$query->rowCount();
+      return $result;
+    } catch (PDOException $e) {
+      die("somthing wrong".$e);
+    }
+  }
 
   public function CheckTime($time){
     $dateTime = new DateTime($time);
@@ -86,7 +97,7 @@ class UserProfile{
   $profile = new UserProfile();
   $result=$profile->getUser();
   $userInfoId=$result['user_info_id'];
-
+  $totalAppointment=$profile->getTotalAppointment($userInfoId);
   if (isset($_GET['action']) && $_GET['action']=="logout") {
     Session::destroy();
 }    
@@ -114,7 +125,7 @@ class UserProfile{
 
     <link rel="stylesheet" href="css/bootstrap-datepicker.css">
     <link rel="stylesheet" href="css/jquery.timepicker.css">
-
+    <link href="https://fonts.googleapis.com/css?family=Lora&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="css/flaticon.css">
     <link rel="stylesheet" href="css/icomoon.css">
@@ -148,6 +159,10 @@ class UserProfile{
         border: 1px solid #ccc;
         border-top: none;
       }
+      .details{
+      font-family: 'Lora', serif;
+      font-size: 20px;
+      }
     </style>
   </head>
   <body>
@@ -174,16 +189,21 @@ class UserProfile{
       <div class="container">
         <div class="row text-center">
           <div class="col-lg-8 ftco-animate">
-            <img src="<?php echo $result['propic'];?>" class="rounded"style="width:50%">
+            <img src="<?php echo $result['propic'];?>" style="width:300px;height:300px;border-radius: 50%;">
             <h2 class=""> <?php echo $result['full_name'];?> </h2>
-             <p class=""> <?php echo $result['phone'];?> </p>
+             <p class="details">Age: <?php echo $result['age'];?> </br>
+            Phone: <?php echo $result['phone'];?> </br>
+             Email: <?php echo $result['email'];?> </br>
+             Address: <?php echo $result['address'];?> <br>
+             Total appointment: <?php  echo $totalAppointment;?> </p>
             <div class="tab">
               <button class="tablinks" onclick="openCity(event, 'upcoming')" id="defaultOpen">Upcoming Appoinment</button>
               <button class="tablinks" onclick="openCity(event, 'previous')">Previous Appoinment</button>
            </div>
           <div id="upcoming" class="tabcontent">
             <?php
-              $appointment=$profile->getAppointment($userInfoId);
+              $today=date("Y-m-d");
+              $appointment=$profile->getAppointment($userInfoId,"pending",$today);
              if ($appointment->rowCount()<1) {
                ?>
                <p>No appointment found</p>
@@ -203,13 +223,9 @@ class UserProfile{
                 </thead>
               <?php
                 while ($info = $appointment->fetch(PDO::FETCH_ASSOC)) {
-                    $docId = $info['Doctor_info_id'];
+                    $docId = $info['doctor_info_id'];
                     $appointmentTime=$info['date']." ".$info['time'];
-                    $docName=$profile->getDoctorName($docId);
-                    $CheckTime=$profile->CheckTime($appointmentTime);
-                    $today=date("Y-m-d");
-                    if ($info['status'] =="pending" && $info['date']>$today) {
-                     
+                    $docName=$profile->getDoctorName($docId);                     
                   ?>
                     <tbody>
                       <tr>
@@ -234,17 +250,13 @@ class UserProfile{
                       </tr>
                     </tbody>
                   <?php
-              }
                 }
                 ?>
                 </table>
                 <?php
              } 
             ?>
-           
-            
           </div>
-
           <div id="previous" class="tabcontent">
              <?php
               $status="complete";
@@ -267,7 +279,7 @@ class UserProfile{
                 </thead>
               <?php
                 while ($info = $appointment->fetch(PDO::FETCH_ASSOC)) {
-                    $docId = $info['Doctor_info_id'];
+                    $docId = $info['doctor_info_id'];
                     $docName=$profile->getDoctorName($docId);
                     $CheckTime=$profile->CheckTime($appointmentTime);
                     if ($info['status']==="complete") {
@@ -302,60 +314,13 @@ class UserProfile{
             ?>
           </div>
           </div> <!-- .col-md-8 -->
-
-          <div class="col-lg-4 sidebar ftco-animate">
-            <div class="sidebar-box ftco-animate">
-              <h3>Category</h3>
-              <ul class="categories">
-                <li><a href="#">Neurology <span>(6)</span></a></li>
-                <li><a href="#">Cardiology <span>(8)</span></a></li>
-                <li><a href="#">Surgery <span>(2)</span></a></li>
-                <li><a href="#">Dental <span>(2)</span></a></li>
-                <li><a href="#">Ophthalmology <span>(2)</span></a></li>
-              </ul>
-            </div>
-
-            <div class="sidebar-box ftco-animate">
-              <h3>Popular Articles</h3>
-              <div class="block-21 mb-4 d-flex">
-                <a class="blog-img mr-4" style="background-image: url(images/image_1.jpg);"></a>
-                <div class="text">
-                  <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about the blind texts</a></h3>
-                  <div class="meta">
-                    <div><a href="#"><span class="icon-calendar"></span> Oct. 04, 2018</a></div>
-                    <div><a href="#"><span class="icon-person"></span> Dave Lewis</a></div>
-                    <div><a href="#"><span class="icon-chat"></span> 19</a></div>
-                  </div>
-                </div>
-              </div>
-              <div class="block-21 mb-4 d-flex">
-                <a class="blog-img mr-4" style="background-image: url(images/image_2.jpg);"></a>
-                <div class="text">
-                  <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about the blind texts</a></h3>
-                  <div class="meta">
-                    <div><a href="#"><span class="icon-calendar"></span> Oct. 04, 2018</a></div>
-                    <div><a href="#"><span class="icon-person"></span> Dave Lewis</a></div>
-                    <div><a href="#"><span class="icon-chat"></span> 19</a></div>
-                  </div>
-                </div>
-              </div>
-              <div class="block-21 mb-4 d-flex">
-                <a class="blog-img mr-4" style="background-image: url(images/image_3.jpg);"></a>
-                <div class="text">
-                  <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about the blind texts</a></h3>
-                  <div class="meta">
-                    <div><a href="#"><span class="icon-calendar"></span> Oct. 04, 2018</a></div>
-                    <div><a href="#"><span class="icon-person"></span> Dave Lewis</a></div>
-                    <div><a href="#"><span class="icon-chat"></span> 19</a></div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <?php
+              include ('sideBar.php');
+            ?>
           </div><!-- END COL -->
         </div>
       </div>
     </section>
-
     <footer class="ftco-footer ftco-bg-dark ftco-section">
       <div class="container">
         <div class="row mb-5">

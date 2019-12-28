@@ -29,6 +29,16 @@ class DoctorProfile{
         die("somthing wrong".$e->getMessage());
       }
   }
+  public function getOtherDocinfo($db,$department,$id){
+    try {
+      $sql="select * from doctor_info where department='$department' and doctor_info_id!='$id' order by doctor_info_id DESC LIMIT 3";
+      $query = $db->conn->prepare($sql);
+      $query->execute();
+      return $query;
+    } catch (PDOException $e) {
+      die("somthing wrong " .$e->getMessage());
+    }
+  }
 
 }
 $profile = new DoctorProfile();
@@ -77,7 +87,9 @@ if (isset($_GET['action']) && $_GET['action']=="logout") {
       font-family: 'Lora', serif;
       font-size: 20px;
       }
-      
+      .other{
+        font-size: 25px;
+      }
     </style>
   </head>
   <body>
@@ -114,9 +126,30 @@ if (isset($_GET['action']) && $_GET['action']=="logout") {
             Joining : <?php echo $result['join_date'];?> <br>
             Duty time: <?php echo $result['start_duty_time'];?> - <?php echo $result['end_duty_time'];?> <br>
             Total Appointment: <?php echo $patient;?> <br>
-            Department:<a href="doctor.php?department=<?php echo $result['department']?>"> <?php echo $result['department'];?> </a> 
+            Department:<a href="doctor.php?department=<?php echo $result['department']?>"> <?php echo $result['department']; $department=$result['department'];?> </a> 
           </p>
             <a href="appointment.php?doctor=<?php echo $result['doctor_name']?>" class="details">Make An Appointment</a>
+            <br>
+          <?php
+            $query=$profile->getOtherDocinfo($db,$department,$result['doctor_info_id']);
+            while($info = $query->fetch(PDO::FETCH_ASSOC)){
+          ?><!--
+            <div class="float-left">
+              <div class="block-21 mb-4 d-flex">
+                <a class="blog-img mr-4" style="background-image: url(<?php echo $info['pro_pic'];?>);"></a>
+              <div class="text">
+                <h3 class="heading"><a href="blog-single.php?id=<?php echo $info['doctor_info_id']?>"><?php echo $info['doctor_name'];?></a></h3>
+              <div class="meta">
+                <div><a href="doctor-single.php?id=<?php echo $info['doctor_info_id']?>">See profie</a></div>
+              </div>
+              </div>
+            </div> 
+          </div>
+          <br>
+        -->
+        <?php
+          } 
+        ?>
           </div> <!-- .col-md-8 -->
           <?php
           include('sideBar.php');
