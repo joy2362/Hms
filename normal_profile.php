@@ -34,13 +34,14 @@ class UserProfile{
     }
     
   }
+  //get appointment info with different condition
   public function __call($name,$arg){
-    if($name == 'getAppointment')
+    if($name == 'getAppointment'){
       switch(count($arg)){
-        case 0 : return 0 ;
           case 3 :
             try {
-              $sql="select * from appointment where user_info_id='$arg[0]' and status='$arg[1]' and date >='$arg[2]'";
+              $sql="SELECT appointment.*, doctor_info.doctor_name FROM appointment INNER JOIN doctor_info ON appointment.doctor_info_id=doctor_info.doctor_info_id
+              where appointment.user_info_id='$arg[0]' and status='$arg[1]' and date >='$arg[2]' ";
               $query = $this->db->conn->prepare($sql);
               $query->execute();  
               return $query;      
@@ -49,7 +50,8 @@ class UserProfile{
             };
           case 2 :
             try {
-              $sql="select * from appointment where user_info_id='$arg[0]' and status='$arg[1]'";
+              $sql="SELECT appointment.*, doctor_info.doctor_name FROM appointment INNER JOIN doctor_info ON appointment.doctor_info_id=doctor_info.doctor_info_id
+              where appointment.user_info_id='$arg[0]' and not appointment.status='$arg[1]' ";
               $query = $this->db->conn->prepare($sql);
               $query->execute();  
               return $query;      
@@ -57,23 +59,23 @@ class UserProfile{
               die("somthing wrong".$e);
             };
     }
+    }
   }
+   public function expired($userInfoId,$status,$today){
 
-  public function getDoctorName($id){
     try {
-        $sql="select * from doctor_info where doctor_info_id='$id'";
-        $query = $this->db->conn->prepare($sql);
-        $query->execute();  
-        if ($query->rowCount()==1) {
-          $result=$query->fetch(PDO::FETCH_ASSOC);
-
-          return $result['doctor_name'];
-        }     
-      } catch (PDOException $e) {
-        die("somthing wrong".$e);
-      }
+     $sql="SELECT appointment.*, doctor_info.doctor_name FROM appointment INNER JOIN doctor_info ON appointment.doctor_info_id=doctor_info.doctor_info_id
+       where appointment.user_info_id='$userInfoId' and status='$status' and date <'$today' ";
+      $query = $this->db->conn->prepare($sql);
+      $query->execute();  
+      return $query;      
+    } catch (PDOException $e) {
+      die("somthing wrong".$e);
+    }
+   
   }
-  public function getTotalAppointment($id){
+
+   public function getTotalAppointment($id){
      try {
       $sql="select * from appointment where user_info_id='$id'";
       $query = $this->db->conn->prepare($sql);
@@ -84,19 +86,11 @@ class UserProfile{
       die("somthing wrong".$e);
     }
   }
-
-  public function CheckTime($time){
-    $dateTime = new DateTime($time);
-    if ($dateTime->diff(new DateTime)->format('%R') == '+') {
-      return 0;
-    }else{
-      return 1;
-    }
-  }
 }
   $profile = new UserProfile();
   $result=$profile->getUser();
   $userInfoId=$result['user_info_id'];
+
   $totalAppointment=$profile->getTotalAppointment($userInfoId);
   if (isset($_GET['action']) && $_GET['action']=="logout") {
     Session::destroy();
@@ -187,20 +181,71 @@ class UserProfile{
     </section>
     <section class="ftco-section">
       <div class="container">
-        <div class="row text-center">
-          <div class="col-lg-8 ftco-animate">
-            <img src="<?php echo $result['propic'];?>" style="width:300px;height:300px;border-radius: 50%;">
-            <h2 class=""> <?php echo $result['full_name'];?> </h2>
-             <p class="details">Age: <?php echo $result['age'];?> </br>
-            Phone: <?php echo $result['phone'];?> </br>
-             Email: <?php echo $result['email'];?> </br>
-             Address: <?php echo $result['address'];?> <br>
-             Total appointment: <?php  echo $totalAppointment;?> </p>
-            <div class="tab">
-              <button class="tablinks" onclick="openCity(event, 'upcoming')" id="defaultOpen">Upcoming Appoinment</button>
-              <button class="tablinks" onclick="openCity(event, 'previous')">Previous Appoinment</button>
-           </div>
-          <div id="upcoming" class="tabcontent">
+      <div class="card mt-5">
+        <h5 class="card-header text-center">User Profile Info</h5>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-3 pt-4">
+              <div class="profile-pic text-center">
+                <img src="<?php echo $result['propic'];?>" alt="Profile Image" style="height: 250px; width: 250px;  border-radius: 50%; border: 4px solid green;">
+                <br>
+                <button type="submit" class="btn btn-info btn-sm mt-4">Update Profile</button>
+              </div>
+            </div>
+            <div class="col-md-7 offset-1 pt-4">
+              <div class="profile-info">
+                <!-- User's info Table -->
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">Info</th>
+                      <th scope="col">Details</th> 
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">Name</th>
+                      <td><?php echo $result['full_name'];?></td> 
+                    </tr> 
+
+                    <tr>
+                      <th scope="row">Email</th>
+                      <td><?php echo $result['email'];?></td> 
+                    </tr> 
+
+                    <tr>
+                      <th scope="row">Gender</th>
+                      <td><?php echo $result['gender'];?></td> 
+                    </tr> 
+
+                    <tr>
+                      <th scope="row">Age</th>
+                      <td><?php echo $result['age'];?></td> 
+                    </tr>
+
+                    <tr>
+                      <th scope="row">Number of appointment</th>
+                      <td><?php  echo $totalAppointment;?></td> 
+                    </tr> 
+
+                    <tr>
+                      <th scope="row">Address</th>
+                      <td><?php echo $result['address'];?></td> 
+                    </tr> 
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab">
+        <button class="tablinks" onclick="openCity(event, 'upcoming')" id="defaultOpen">Upcoming Appoinment</button>
+        <button class="tablinks" onclick="openCity(event, 'previous')">Previous Appoinment</button>
+        <button class="tablinks" onclick="openCity(event, 'expire')">Expired Appoinment</button>
+      </div>
+      <div id="upcoming" class="tabcontent">
             <?php
               $today=date("Y-m-d");
               $appointment=$profile->getAppointment($userInfoId,"pending",$today);
@@ -218,14 +263,12 @@ class UserProfile{
                     <th>Problem</th>
                     <th>time</th>
                     <th>Status</th>
-                    <th>Action</th>
+                    <th colspan="2" class="text-center">Action</th>
                   </tr>
                 </thead>
               <?php
                 while ($info = $appointment->fetch(PDO::FETCH_ASSOC)) {
-                    $docId = $info['doctor_info_id'];
-                    $appointmentTime=$info['date']." ".$info['time'];
-                    $docName=$profile->getDoctorName($docId);                     
+                    $appointmentTime=$info['date']." ".$info['time'];                 
                   ?>
                     <tbody>
                       <tr>
@@ -233,7 +276,7 @@ class UserProfile{
                           <?php echo $info['Appoinment_id']; ?>
                         </td>
                         <td>
-                          <?php   echo $docName; ?>
+                          <?php echo $info['doctor_name']; ?>
                         </td>
                          <td>
                           <?php echo $info['Problem']; ?>
@@ -247,6 +290,9 @@ class UserProfile{
                         <td>
                           <a href="pdfCreator.php?Aid=<?php echo $info['Appoinment_id']; ?>" class="btn btn-outline-primary" download target="_blank">Download</a>
                         </td>
+                        <td>
+                          <a href="?Aid=<?php echo $info['Appoinment_id']; ?>" class="btn btn-outline-danger">Cancle</a>
+                        </td>
                       </tr>
                     </tbody>
                   <?php
@@ -257,9 +303,9 @@ class UserProfile{
              } 
             ?>
           </div>
-          <div id="previous" class="tabcontent">
+<div id="previous" class="tabcontent">
              <?php
-              $status="complete";
+              $status="pending";
               $appointment=$profile->getAppointment($userInfoId,$status);
             if ($appointment->rowCount()<1) {
                ?>
@@ -279,10 +325,8 @@ class UserProfile{
                 </thead>
               <?php
                 while ($info = $appointment->fetch(PDO::FETCH_ASSOC)) {
-                    $docId = $info['doctor_info_id'];
-                    $docName=$profile->getDoctorName($docId);
                     $CheckTime=$profile->CheckTime($appointmentTime);
-                    if ($info['status']==="complete") {
+                   
                   ?>
                     <tbody>
                       <tr>
@@ -290,7 +334,7 @@ class UserProfile{
                           <?php echo $info['Appoinment_id']; ?>
                         </td>
                         <td>
-                          <?php   echo $docName; ?>
+                            <?php echo $info['doctor_name']; ?>
                         </td>
                          <td>
                           <?php echo $info['Problem']; ?>
@@ -305,7 +349,7 @@ class UserProfile{
                     </tbody>
 
                   <?php
-                }
+               
               }
                 ?>
                 </table>
@@ -313,116 +357,64 @@ class UserProfile{
              } 
             ?>
           </div>
-          </div> <!-- .col-md-8 -->
+           <div id="expire" class="tabcontent">
             <?php
-              include ('sideBar.php');
+              $today=date("Y-m-d");
+              $appointment=$profile->expired($userInfoId,"pending",$today);
+             if ($appointment->rowCount()<1) {
+               ?>
+               <p>No appointment found</p>
+               <?php
+             }else{
+              ?>
+              <table class="table">
+                <thead class="thead-light"> 
+                  <tr>
+                    <th>#</th>
+                    <th>Doctor</th>
+                    <th>Problem</th>
+                    <th>time</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+              <?php
+                while ($info = $appointment->fetch(PDO::FETCH_ASSOC)) {
+                    $appointmentTime=$info['date']." ".$info['time'];                 
+                  ?>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <?php echo $info['Appoinment_id']; ?>
+                        </td>
+                        <td>
+                          <?php echo $info['doctor_name']; ?>
+                        </td>
+                         <td>
+                          <?php echo $info['Problem']; ?>
+                        </td>
+                        <td>
+                          <?php  echo $appointmentTime; ?>
+                        </td>
+                        <td>
+                          <?php echo $info['status']; ?>
+                        </td>
+                        
+                      </tr>
+                    </tbody>
+                  <?php
+                }
+                ?>
+                </table>
+                <?php
+             } 
             ?>
-          </div><!-- END COL -->
-        </div>
-      </div>
+          </div>
+    </div>
     </section>
-    <footer class="ftco-footer ftco-bg-dark ftco-section">
-      <div class="container">
-        <div class="row mb-5">
-          <div class="col-md">
-            <div class="ftco-footer-widget mb-5">
-              <h2 class="ftco-heading-2 logo">Dr.<span>care</span></h2>
-              <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-            </div>
-            <div class="ftco-footer-widget mb-5">
-              <h2 class="ftco-heading-2">Have a Questions?</h2>
-              <div class="block-23 mb-3">
-                <ul>
-                  <li><span class="icon icon-map-marker"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
-                  <li><a href="#"><span class="icon icon-phone"></span><span class="text">+2 392 3929 210</span></a></li>
-                  <li><a href="#"><span class="icon icon-envelope"></span><span class="text">info@yourdomain.com</span></a></li>
-                </ul>
-              </div>
-
-              <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-3">
-                <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
-                <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
-                <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-md">
-            <div class="ftco-footer-widget mb-5 ml-md-4">
-              <h2 class="ftco-heading-2">Links</h2>
-              <ul class="list-unstyled">
-                <li><a href="#"><span class="ion-ios-arrow-round-forward mr-2"></span>Home</a></li>
-                <li><a href="#"><span class="ion-ios-arrow-round-forward mr-2"></span>About</a></li>
-                <li><a href="#"><span class="ion-ios-arrow-round-forward mr-2"></span>Services</a></li>
-                <li><a href="#"><span class="ion-ios-arrow-round-forward mr-2"></span>Deparments</a></li>
-                <li><a href="#"><span class="ion-ios-arrow-round-forward mr-2"></span>Contact</a></li>
-              </ul>
-            </div>
-            <div class="ftco-footer-widget mb-5 ml-md-4">
-              <h2 class="ftco-heading-2">Services</h2>
-              <ul class="list-unstyled">
-                <li><a href="#"><span class="ion-ios-arrow-round-forward mr-2"></span>Neurolgy</a></li>
-                <li><a href="#"><span class="ion-ios-arrow-round-forward mr-2"></span>Dentist</a></li>
-                <li><a href="#"><span class="ion-ios-arrow-round-forward mr-2"></span>Ophthalmology</a></li>
-                <li><a href="#"><span class="ion-ios-arrow-round-forward mr-2"></span>Cardiology</a></li>
-                <li><a href="#"><span class="ion-ios-arrow-round-forward mr-2"></span>Surgery</a></li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-md">
-            <div class="ftco-footer-widget mb-5">
-              <h2 class="ftco-heading-2">Recent Blog</h2>
-              <div class="block-21 mb-4 d-flex">
-                <a class="blog-img mr-4" style="background-image: url(images/image_1.jpg);"></a>
-                <div class="text">
-                  <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about</a></h3>
-                  <div class="meta">
-                    <div><a href="#"><span class="icon-calendar"></span> Dec 25, 2018</a></div>
-                    <div><a href="#"><span class="icon-person"></span> Admin</a></div>
-                    <div><a href="#"><span class="icon-chat"></span> 19</a></div>
-                  </div>
-                </div>
-              </div>
-              <div class="block-21 mb-5 d-flex">
-                <a class="blog-img mr-4" style="background-image: url(images/image_2.jpg);"></a>
-                <div class="text">
-                  <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about</a></h3>
-                  <div class="meta">
-                    <div><a href="#"><span class="icon-calendar"></span> Dec 25, 2018</a></div>
-                    <div><a href="#"><span class="icon-person"></span> Admin</a></div>
-                    <div><a href="#"><span class="icon-chat"></span> 19</a></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md">
-            <div class="ftco-footer-widget mb-5">
-              <h2 class="ftco-heading-2">Opening Hours</h2>
-              <h3 class="open-hours pl-4"><span class="ion-ios-time mr-3"></span>We are open 24/7</h3>
-            </div>
-            <div class="ftco-footer-widget mb-5">
-              <h2 class="ftco-heading-2">Subscribe Us!</h2>
-              <form action="#" class="subscribe-form">
-                <div class="form-group">
-                  <input type="text" class="form-control mb-2 text-center" placeholder="Enter email address">
-                  <input type="submit" value="Subscribe" class="form-control submit px-3">
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12 text-center">
-
-            <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-  Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-  <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
-          </div>
-        </div>
-      </div>
-    </footer>
     
-  
+    <?php
+      include_once 'footer.php';
+    ?>
 
   <!-- loader -->
   <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
@@ -431,6 +423,7 @@ class UserProfile{
   include('javascriptLink.php');
 ?>
   <script>
+    //show message
         function openCity(evt, cityName) {
           var i, tabcontent, tablinks;
           tabcontent = document.getElementsByClassName("tabcontent");

@@ -18,7 +18,10 @@ if (isset($_GET['doctor'])) {
 } catch (PDOException $e) {
     die("Somthing is wrong " . $e->getMessage());
 }
+}else{
+	header('location:doctor.php');
 }
+//this is logout
 if (isset($_GET['action']) && $_GET['action']=="logout") {
   $session->destroy();
 }
@@ -27,14 +30,24 @@ try {
    $query = $db->conn->prepare("select * from user_info where user_id='$id'");
     $query->execute();
     $result=$query->fetch(PDO::FETCH_ASSOC);
-  
 } catch (PDOException $e) {
     die("Somthing is wrong " . $e->getMessage());
 }
-
- if(isset($_POST['appointment'] ) && $_SERVER['REQUEST_METHOD'] === 'POST'){
-  $confirm = $appointment->setAppointment($_POST);
-  echo $_POST['doctorName'];
+if($type=='normal'){
+	if(isset($_POST['appointment'] ) && $_SERVER['REQUEST_METHOD'] === 'POST'){
+  	$confirm = $appointment->setAppointment($_POST);
+}
+}
+ 
+if($type=='hr'){
+	if(isset($_POST['emergency'] ) && $_SERVER['REQUEST_METHOD'] === 'POST'){
+	  $confirm = $appointment->emergency($_POST);
+	}
+}
+if(!isset($_POST['type'])){
+	if(isset($_POST['emergency'] ) && $_SERVER['REQUEST_METHOD'] === 'POST'){
+  		$confirm = $appointment->emergency($_POST);
+	}
 }
 ?>
 <!DOCTYPE html>
@@ -85,7 +98,7 @@ try {
         </div>
       </div>
     </section>
-  
+  				
 		<section class="ftco-section ftco-no-pt ftco-no-pb ftco-counter img" id="section-counter" style="background-image: url(images/bg_3.jpg);" data-stellar-background-ratio="0.5">
     	<div class="container">
     		<div class="row">
@@ -97,10 +110,13 @@ try {
 	          </div>
             <?php
               if (isset($confirm)) {
-                echo $confirm;
+              	?>
+                <div class="message" data-flashdata="<?php echo $confirm;?>"></div> 
+                <?php
               }
-              ?>
-	          <form action="" class="appointment-form ftco-animate" method="post">
+              if ($type == 'normal') {
+              	?>
+              	<form action="" class="appointment-form ftco-animate" method="post">
 	    				<div class="d-md-flex">
 		    				<div class="form-group">
 		    					<input type="text" class="form-control" name="fname" value="<?php echo $result['full_name']?>" >
@@ -152,6 +168,61 @@ try {
 		            </div>
 	    				</div>
 	    			</form>
+              <?php
+              }else{
+              	?>
+				<form action="" class="appointment-form ftco-animate" method="post">
+	    			<div class="d-md-flex">
+		    			<div class="form-group">
+		    				<input type="text" class="form-control" name="fname" placeholder="Full name">
+		    			</div>	
+	    			</div>
+	    				<div class="d-md-flex">
+	    					<div class="form-group ">
+                  <input type="text" class="form-control" name="phone" placeholder="Phone"> 
+                </div>
+	    					<div class="form-group ml-md-4">
+		    					<input type="text" class="form-control" name="gender" placeholder="Gender" >
+		    				</div>
+	    				</div>
+              <div class="d-md-flex">
+                <div class="form-group">
+                  <input type="text" class="form-control" name="doctorName" value="<?php echo $doctorInfo['doctor_name']?>" >
+                </div>
+                <div class="form-group ml-md-4">
+                  <input type="text" class="form-control" name="department" value="<?php echo $doctorInfo['department']?>">
+                </div>
+              </div>
+	    		<div class="d-md-flex">
+		    		<div class="form-group">
+		    			<div class="input-wrap">
+		            		<div class="icon"><span class="ion-md-calendar"></span></div>
+		            		<input type="text" class="form-control appointment_date" name="appointmentDate" value="<?php echo date("Y-m-d");?>" >
+	            		</div>
+		    				</div>
+		    				<div class="form-group ml-md-4">
+		    					<div class="input-wrap">
+		            		<div class="icon"><span class="ion-ios-clock"></span></div>
+		            		<input type="text" name="appointmentTime" class="form-control appointment_time" placeholder="Time">
+	            		</div>
+		    				</div>
+	    				</div>
+	    				<div class="d-md-flex">
+	    					<div class="form-group">
+		              <textarea  cols="30" rows="2" name="Prob" class="form-control" placeholder="Problem"></textarea>
+		            </div>
+
+               		 <input type="hidden" name="status" value="pending">
+           	
+		            <div class="form-group ml-md-4">
+		              <input type="submit" name="emergency" class="btn btn-secondary py-3 px-4">
+		            </div>
+	    				</div>
+	    			</form>
+				<?php
+              }
+              ?>
+	          
 
 
     			</div>
@@ -200,7 +271,6 @@ try {
 <?php
   include('footer.php');
 ?> 
-  
 
   <!-- loader -->
   <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
@@ -208,5 +278,23 @@ try {
 <?php
   include('javascriptLink.php');
 ?>
+<script type="text/javascript">
+	const flashdata=$('.message').data('flashdata');
+		if (flashdata==1) {
+  			swal("Error!", "Phone number already exist please log in frist", "error");
+		}
+		if (flashdata==0) {
+  			swal("Sorry!", "Doctor name is not vailed", "error");
+		}
+		if (flashdata==2) {
+  			swal("Success!", "Appointment Booked Successfully!!!", "success");
+		}
+		if (flashdata==3) {
+  			swal("Error!", "Describe the problem frist!!!", "error");
+		}
+		if (flashdata==4) {
+  			swal("Error!", "Select the time frist!!!", "error");
+		}
+</script>
   </body>
 </html>

@@ -73,6 +73,16 @@ class HrProfile {
         die($e->getMessage());
     }
     }
+    public function getEquipment(){
+        try {
+            $sql="select * from equipment where quentity BETWEEN '0' AND '5'";
+            $query = $this->db->conn->prepare($sql);
+            $query->execute();
+            return $query;
+        } catch (PDOException $e) {
+            die($e->getMessage());
+        }
+    }
 }
 
 $profile = new HrProfile();
@@ -82,6 +92,7 @@ $totalMember=$profile->getMembers();
 $totalAppointment=$profile->getAllAppointment();
 $weekTotal=$profile->getWeekTotal();
 $paymentInfo=$profile->paymentInfo();
+$equipmentInfo=$profile->getEquipment();
 if (isset($_GET['action']) && $_GET['action']=="logout") {
     Session::destroy();
 }  
@@ -245,15 +256,15 @@ if (isset($_GET['action']) && $_GET['action']=="logout") {
         <!-- MENU SIDEBAR-->
         <aside class="menu-sidebar d-none d-lg-block">
             <div class="logo">
-                <a href="#">
-                    <img src="images/icon/logo.png" alt="Cool Admin" />
-                </a>
+               <div class="col-lg-2 pr-4 align-items-center">
+                    <a class="navbar-brand" href="index.php">Dr.<span>care</span></a>
+                </div>
             </div>
             <div class="menu-sidebar__content js-scrollbar1">
                 <nav class="navbar-sidebar">
                     <ul class="list-unstyled navbar__list">
                         <li class="active has-sub">
-                            <a class="js-arrow" href="#">
+                            <a class="js-arrow" href="hr_profile.php">
                                 <i class="fas fa-tachometer-alt"></i>Dashboard</a>
                         </li>
                         <li>
@@ -520,11 +531,13 @@ if (isset($_GET['action']) && $_GET['action']=="logout") {
                             <div class="col-md-12">
                                 <div class="overview-wrap">
                                     <h2 class="title-1">overview</h2>
-                                    <button class="au-btn au-btn-icon au-btn--blue">
-                                        <i class="zmdi zmdi-plus"></i>add item</button>
+                                    <a href="doctor.php" class="au-btn au-btn-icon au-btn--blue"><i class="zmdi zmdi-plus"></i>set appointment</a>
+                                        </div>
+                                      </div>
                                 </div>
                             </div>
                         </div>
+
                         <div class="row m-t-25">
                             <div class="col-sm-6 col-lg-3">
                                 <div class="overview-item overview-item--c1">
@@ -600,68 +613,6 @@ if (isset($_GET['action']) && $_GET['action']=="logout") {
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-lg-6">
-                                <div class="au-card recent-report">
-                                    <div class="au-card-inner">
-                                        <h3 class="title-2">recent reports</h3>
-                                        <div class="chart-info">
-                                            <div class="chart-info__left">
-                                                <div class="chart-note">
-                                                    <span class="dot dot--blue"></span>
-                                                    <span>products</span>
-                                                </div>
-                                                <div class="chart-note mr-0">
-                                                    <span class="dot dot--green"></span>
-                                                    <span>services</span>
-                                                </div>
-                                            </div>
-                                            <div class="chart-info__right">
-                                                <div class="chart-statis">
-                                                    <span class="index incre">
-                                                        <i class="zmdi zmdi-long-arrow-up"></i>25%</span>
-                                                    <span class="label">products</span>
-                                                </div>
-                                                <div class="chart-statis mr-0">
-                                                    <span class="index decre">
-                                                        <i class="zmdi zmdi-long-arrow-down"></i>10%</span>
-                                                    <span class="label">services</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="recent-report__chart">
-                                            <canvas id="recent-rep-chart"></canvas>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="au-card chart-percent-card">
-                                    <div class="au-card-inner">
-                                        <h3 class="title-2 tm-b-5">char by %</h3>
-                                        <div class="row no-gutters">
-                                            <div class="col-xl-6">
-                                                <div class="chart-note-wrap">
-                                                    <div class="chart-note mr-0 d-block">
-                                                        <span class="dot dot--blue"></span>
-                                                        <span>products</span>
-                                                    </div>
-                                                    <div class="chart-note mr-0 d-block">
-                                                        <span class="dot dot--red"></span>
-                                                        <span>services</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-xl-6">
-                                                <div class="percent-chart">
-                                                    <canvas id="percent-chart"></canvas>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
                             <div class="col-lg-12">
                                 <h2 class="title-1 m-b-25">Payment info</h2>
                                 <div class="table-responsive table--no-card m-b-40">
@@ -692,6 +643,80 @@ if (isset($_GET['action']) && $_GET['action']=="logout") {
                                             
                                         </tbody>
                                     </table>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="row">
+                            <div class="col-lg-6">
+                                <div class="user-data m-b-40">
+                                    <h3 class="title-3 m-b-30">
+                                        <i class="zmdi zmdi-trending-down"></i>running low</h3>
+                                    <div class="table-responsive table-data">
+                                        
+                                                 <?php 
+                                                 if($equipmentInfo->rowCount()==0){
+                                                    ?>
+                                                    <span class="ml-4">no equipment running low</span>
+                                                    
+                                                    <?php
+                                                 }else{
+                                                    ?>
+                                                    <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <td>id</td>
+                                                    <td>name</td>
+                                                    <td>quantity</td>
+                                                    <td></td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                    <?php
+                                                while ($row=$equipmentInfo->fetch(PDO::FETCH_ASSOC)) {
+                                                    ?>
+                                                <tr>
+                                                    <td>
+                                                        <div class="table-data__info">
+                                                            <h6><?php echo $row['equipment_id']?></h6>
+                                                        </div>
+                                                    </td>
+                                                    <td><?php echo $row['name']?></td>
+                                                    <td><?php echo $row['quentity']?></td>
+                                                </tr>
+                                                    <?php
+                                                }
+                                            }
+                                            ?>  
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="au-card chart-percent-card">
+                                    <div class="au-card-inner">
+                                        <h3 class="title-2 tm-b-5">char by %</h3>
+                                        <div class="row no-gutters">
+                                            <div class="col-xl-6">
+                                                <div class="chart-note-wrap">
+                                                    <div class="chart-note mr-0 d-block">
+                                                        <span class="dot dot--blue"></span>
+                                                        <span>products</span>
+                                                    </div>
+                                                    <div class="chart-note mr-0 d-block">
+                                                        <span class="dot dot--red"></span>
+                                                        <span>services</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-6">
+                                                <div class="percent-chart">
+                                                    <canvas id="percent-chart"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

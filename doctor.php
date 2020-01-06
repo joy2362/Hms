@@ -4,7 +4,6 @@ include('session.php');
 if (isset($_GET['department'])) {
   $department=$_GET['department'];
 }
-
 class Doctor{
   
  public function __call($name,$arg){
@@ -195,19 +194,37 @@ if (isset($department)) {
                 if ($page==1) {
                   echo "<li class=\"page-item disabled\"><a class=\"page-link\" href=\"doctor.php?page=".($page-1)."\">Previous</a></li>";
                 }else{
-                echo "<li class=\"page-item\"><a class=\"page-link\" href=\"doctor.php?page=".($page-1)."\">Previous</a></li>";
+                  if (isset($department)) {
+                    echo "<li class=\"page-item\"><a class=\"page-link\" href=\"doctor.php?department=".$department."&page=".($page-1)."\">Previous</a></li>";
+                  }else{
+                    echo "<li class=\"page-item\"><a class=\"page-link\" href=\"doctor.php?page=".($page-1)."\">Previous</a></li>";
+                  }
+                
                 }
                 for ($i=1; $i <=$number_of_page ; $i++) { 
                   if ($i==$page) {
-                    echo "<li class=\"page-item active\"><a class=\"page-link\" href=\"doctor.php?page=".$i."\">".$i."</a></li>";
+                    if (isset($department)) {
+                    echo "<li class=\"page-item active\"><a class=\"page-link\" href=\"doctor.php?page=".$i."&department=".$department."\">".$i."</a></li>";
                   }else{
-                  echo "<li class=\"page-item\"><a class=\"page-link\" href=\"doctor.php?page=".$i."\">".$i."</a></li>";
+                    echo "<li class=\"page-item active\"><a class=\"page-link\" href=\"doctor.php?page=".$i."\">".$i."</a></li>";
+                  }
+                    
+                  }else{
+                    if (isset($department)) {
+                    echo "<li class=\"page-item \"><a class=\"page-link\" href=\"doctor.php?page=".$i."&department=".$department."\">".$i."</a></li>";
+                  }else{
+                    echo "<li class=\"page-item\"><a class=\"page-link\" href=\"doctor.php?page=".$i."\">".$i."</a></li>";
+                  }
                   }
                 }
                 if ($page==$number_of_page) {
                   echo "<li class=\"page-item disabled\"><a class=\"page-link\" href=\"doctor.php?page=".($page+1)."\">Next</a></li>";
                 }else{
-                  echo "<li class=\"page-item\"><a class=\"page-link\" href=\"doctor.php?page=".($page+1)."\">Next</a></li>";
+                  if (isset($department)) {
+                    echo "<li class=\"page-item\"><a class=\"page-link\" href=\"doctor.php?department=".$department."&page=".($page+1)."\">Next</a></li>";
+                  }else{
+                    echo "<li class=\"page-item\"><a class=\"page-link\" href=\"doctor.php?page=".($page+1)."\">Next</a></li>";
+                  }
                 }
                 ?>
                 </ul>

@@ -37,7 +37,7 @@
             <div class="ftco-footer-widget mb-5 ml-md-4">
               <h2 class="ftco-heading-2">Links</h2>
               <ul class="list-unstyled">
-                <li><a href="#"><span class="ion-ios-arrow-round-forward mr-2"></span>Home</a></li>
+                <li><a href="index.php"><span class="ion-ios-arrow-round-forward mr-2"></span>Home</a></li>
                 <li><a href="#"><span class="ion-ios-arrow-round-forward mr-2"></span>About</a></li>
                 <li><a href="#"><span class="ion-ios-arrow-round-forward mr-2"></span>Services</a></li>
                 <li><a href="#"><span class="ion-ios-arrow-round-forward mr-2"></span>Deparments</a></li>
@@ -47,11 +47,11 @@
             <div class="ftco-footer-widget mb-5 ml-md-4">
               <h2 class="ftco-heading-2">Services</h2>
               <ul class="list-unstyled">
-                <li><a href="#"><span class="ion-ios-arrow-round-forward mr-2"></span>Neurolgy</a></li>
-                <li><a href="#"><span class="ion-ios-arrow-round-forward mr-2"></span>Dentist</a></li>
-                <li><a href="#"><span class="ion-ios-arrow-round-forward mr-2"></span>Ophthalmology</a></li>
-                <li><a href="#"><span class="ion-ios-arrow-round-forward mr-2"></span>Cardiology</a></li>
-                <li><a href="#"><span class="ion-ios-arrow-round-forward mr-2"></span>Surgery</a></li>
+                <li><a href="doctor.php?department=Neurology"><span class="ion-ios-arrow-round-forward mr-2"></span>Neurolgy</a></li>
+                <li><a href="doctor.php?department=Dental"><span class="ion-ios-arrow-round-forward mr-2"></span>Dentist</a></li>
+                <li><a href="doctor.php?department=Ophthalmology"><span class="ion-ios-arrow-round-forward mr-2"></span>Ophthalmology</a></li>
+                <li><a href="doctor.php?department=Cardiology"><span class="ion-ios-arrow-round-forward mr-2"></span>Cardiology</a></li>
+                <li><a href="doctor.php?department=Surgery"><span class="ion-ios-arrow-round-forward mr-2"></span>Surgery</a></li>
               </ul>
             </div>
           </div>

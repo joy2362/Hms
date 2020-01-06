@@ -135,5 +135,6 @@ class User
 			die("somthing wrong " .$e->getMessage());
 		}
 	}
+
 }
 ?>
