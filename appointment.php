@@ -129,10 +129,10 @@ if(!isset($_POST['type'])){
 	    					<div class="form-group ">
                   <input type="text" class="form-control" name="phone" value="<?php echo $result['phone']?>" >
                 </div>
-	    					<div class="form-group ml-md-4">
-		    					<input type="text" class="form-control" name="gender"  value="<?php echo $result['gender']?>" >
-		    				</div>
-	    				</div>
+				<div class="form-group ml-md-4">
+					<input type="text" class="form-control" name="gender"  value="<?php echo $result['gender']?>" >
+				</div>
+			</div>
               <div class="d-md-flex">
                 <div class="form-group">
                   <input type="text" class="form-control" name="doctorName" value="<?php echo $doctorInfo['doctor_name']?>" >
@@ -144,8 +144,13 @@ if(!isset($_POST['type'])){
 	    		<div class="d-md-flex">
 		    		<div class="form-group">
 		    			<div class="input-wrap">
-		            		<div class="icon"><span class="ion-md-calendar"></span></div>
+		    				<div class="icon"><span class="ion-md-calendar"></span></div>
 		            		<input type="text" class="form-control appointment_date" name="appointmentDate" value="<?php echo date("Y-m-d");?>" >
+		    				<!--            		
+		            		<input type="date" class="form-control"  name="appointmentDate"
+      						 value="<?php //echo date("Y-m-d");?>"
+       						min="date('m-01-Y')" >
+       					-->
 	            		</div>
 		    				</div>
 		    				<div class="form-group ml-md-4">

@@ -76,7 +76,7 @@ if (!isset($_GET['Aid']) && $type!='doctor') {
   </div>
 </div>
 </div>
-	<form method="post" id="prescription">
+	<form method="post" id="prescription" action="medicine.php">
 		<div class="table-responsive">
 			<table class="table table-bordered" id="item-table">        
 				<tr>
@@ -89,6 +89,7 @@ if (!isset($_GET['Aid']) && $type!='doctor') {
 		</div>
     <input type="hidden" name="aid" value="<?php echo  $aid?>">
 		<input type="submit" name="submit" id="submit" class="btn btn-outline-success" value="Save">
+    <a href="doctor_profile.php" class="btn btn-outline-info">Go back</a>
 	</form>
 	<script src="js/jquery.min.js"></script>
   <script src="js/jquery-migrate-3.0.1.min.js"></script>
@@ -101,27 +102,21 @@ if (!isset($_GET['Aid']) && $type!='doctor') {
   		});
   		$(document).on('click','.btn_remove',function(){
   			var btn=$(this).attr("id");
-  			//console.log(btn);
   			$('#row'+btn+'').remove();
   		});
-  		$('#submit').click(function(){
-  			$.ajax({
-  				url:'medicine.php',
-  				method:"POST",
-  				data:$('#prescription').serialize(),
-  				success:function(data){
-            alert(data);
-  					$('#prescription')[0].reset();
-  				}
-  			});
-  		});
+  		
   	})
   </script>
   <!-- Popper JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
 <!-- jQuery library -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <!-- Latest compiled JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script type="text/javascript">
+  
+</script>
+
 </body>
 </html>

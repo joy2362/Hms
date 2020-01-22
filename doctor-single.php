@@ -116,47 +116,66 @@ if (isset($_GET['action']) && $_GET['action']=="logout") {
       </div>
     </section>
     <section class="ftco-section">
-      <div class="container">
-        <div class="row text-center">
-          <div class="col-lg-8 ftco-animate">
-            <img src="<?php echo $result['pro_pic'];?>" style="width:300px;height:300px;border-radius: 50%;">
-            <h2 class=""> <?php echo $result['doctor_name'];?> </h2>
-            <p class="details">Edication: <?php echo $result['education_background'];?> <br>
-            Experience: <?php echo $result['experience'];?> Year <br>
-            Joining : <?php echo $result['join_date'];?> <br>
-            Duty time: <?php echo $result['start_duty_time'];?> - <?php echo $result['end_duty_time'];?> <br>
-            Total Appointment: <?php echo $patient;?> <br>
-            Department:<a href="doctor.php?department=<?php echo $result['department']?>"> <?php echo $result['department']; $department=$result['department'];?> </a> 
-          </p>
-            <a href="appointment.php?doctor=<?php echo $result['doctor_name']?>" class="details">Make An Appointment</a>
-            <br>
-          <?php
-            $query=$profile->getOtherDocinfo($db,$department,$result['doctor_info_id']);
-            while($info = $query->fetch(PDO::FETCH_ASSOC)){
-          ?><!--
-            <div class="float-left">
-              <div class="block-21 mb-4 d-flex">
-                <a class="blog-img mr-4" style="background-image: url(<?php echo $info['pro_pic'];?>);"></a>
-              <div class="text">
-                <h3 class="heading"><a href="blog-single.php?id=<?php echo $info['doctor_info_id']?>"><?php echo $info['doctor_name'];?></a></h3>
-              <div class="meta">
-                <div><a href="doctor-single.php?id=<?php echo $info['doctor_info_id']?>">See profie</a></div>
+       <div class="container">
+      <div class="card mt-5">
+        <h5 class="card-header text-center">Doctor Profile Info</h5>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-3 pt-4">
+              <div class="profile-pic text-center">
+                <img src="<?php echo $result['pro_pic'];?>" alt="Profile Image" style="height: 250px; width: 250px;  border-radius: 50%; border: 4px solid green;">
+                <br>
+                <a href="appointment.php?doctor=<?php echo $result['doctor_name']?>" class="btn btn-info btn-sm mt-4">Make An Appointment </a>
               </div>
+            </div>
+            <div class="col-md-7 offset-1 pt-4">
+              <div class="profile-info">
+                <!-- User's info Table -->
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">Info</th>
+                      <th scope="col">Details</th> 
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">Name</th>
+                      <td><?php echo $result['doctor_name'];?></td> 
+                    </tr> 
+
+                    <tr>
+                      <th scope="row">Email</th>
+                      <td><?php echo $result['email'];?></td> 
+                    </tr> 
+
+                    <tr>
+                      <th scope="row">Experience</th>
+                      <td><?php echo $result['experience'];?> years</td> 
+                    </tr> 
+
+                    <tr>
+                      <th scope="row">Education</th>
+                      <td><?php echo $result['education_background'];?></td> 
+                    </tr>
+
+                    <tr>
+                      <th scope="row">Joining Date</th>
+                      <td><?php echo $result['join_date'];?></td> 
+                    </tr> 
+
+                    <tr>
+                      <th scope="row">Department:</th>
+                      <td><a href="doctor.php?department=<?php echo $result['department'];?>"><?php echo $result['department'];?></a></td> 
+                    </tr> 
+                  </tbody>
+                </table>
               </div>
-            </div> 
+            </div>
           </div>
-          <br>
-        -->
-        <?php
-          } 
-        ?>
-          </div> <!-- .col-md-8 -->
-          <?php
-          include('sideBar.php');
-          ?>
-          <!-- END COL -->
         </div>
-      </div>
+      </div>     
+    </div>
     </section>
 
  <?php

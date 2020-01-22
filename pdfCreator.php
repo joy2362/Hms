@@ -26,10 +26,9 @@ function Footer()
     // Arial italic 8
     $this->SetFont('Arial','I',8);
     // Page number
-    $this->Cell(0,10,'Page '.$this->PageNo().'/{nb}',0,0,'C');
+    $this->Cell(0,10,'Page '.$this->PageNo(),0,0,'C');
 }
 }
-
 class GetInfo 
 {
     
@@ -72,7 +71,7 @@ if ($_GET['Aid']!="") {
     $aid=$_GET['Aid'];
     $getInfo=new GetInfo();
     $result=$getInfo->getAppointment($db,$aid);
-    $docId=$result['Doctor_info_id'];
+    $docId=$result['doctor_info_id'];
     $userId=$result['user_info_id'];
     $doctor=$getInfo->getDoctor($db,$docId);
     $user=$getInfo->getUser($db,$userId);

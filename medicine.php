@@ -1,5 +1,6 @@
 <?php
 include('database.php');
+include_once 'session.php';
 $db=new Database();
 $aid=$_POST['aid'];
 $number=count($_POST["mname"]);
@@ -12,16 +13,18 @@ if ($number >0) {
 			try {
 				$sql="insert into medicine (mname,days,pattern,Appoinment_id) values ('$mname','$day','$pattern','$aid')";
 				$query = $db->conn->prepare($sql);
-      			$query->execute();  
-				
+      			$query->execute(); 
 			} catch (PDException $e) {
 				die("somthing wrong ".$e->getMessage());
 			}
 		}
-		echo "insert successfully!!!";
+		
 	}
+	Session::init();
+	Session::set("success",1);
+	header("location:doctor_profile.php");
 
 }else{
-	echo "enter name";
+	return "1";
 }
 ?>

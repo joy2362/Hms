@@ -2,7 +2,7 @@
   include('database.php');
   include('session.php');
 
-  $db=new Database();
+  //$db=new Database();
 
 class UserProfile{
   private $db;
@@ -24,7 +24,6 @@ class UserProfile{
         $query = $this->db->conn->prepare($sql);
         $query->execute();
         return $query->fetch(PDO::FETCH_ASSOC); 
-
       } catch (PDOException $e) {
         die("somthing wrong".$e);
       }
@@ -86,15 +85,34 @@ class UserProfile{
       die("somthing wrong".$e);
     }
   }
+  public function appointmentCancle($id){
+    try {
+      $sql="DELETE FROM appointment where Appoinment_id='$id'";
+      $query = $this->db->conn->prepare($sql);
+      $query->execute();
+      if ($query) {
+        return 1;
+      }
+      return $query;
+    } catch (PDOException $e) {
+      die("somthing wrong".$e);
+    }
+  }
 }
   $profile = new UserProfile();
   $result=$profile->getUser();
   $userInfoId=$result['user_info_id'];
-
   $totalAppointment=$profile->getTotalAppointment($userInfoId);
   if (isset($_GET['action']) && $_GET['action']=="logout") {
     Session::destroy();
-}    
+}  
+ if (isset($_GET['appointmentid']) && $_GET['appointmentid']!="") {
+    $id=$_GET['appointmentid'];
+    $cancle=$profile->appointmentCancle($id);
+    if (isset($cancle)) {
+     header("location:normal_profile.php");
+    }
+  }   
 ?>
 
 <!DOCTYPE html>
@@ -167,7 +185,13 @@ class UserProfile{
      include 'navbar.php';
     ?>
     <!-- END nav -->
-    
+    <?php
+    if (isset($cancle)) {
+    ?>
+    <div class="message" data-flashdata="<?php echo $cancle;?>"></div>
+    <?php
+    }
+    ?>
     <section class="hero-wrap hero-wrap-2" style="background-image: url('images/bg_1.jpg');" data-stellar-background-ratio="0.5">
       <div class="overlay"></div>
       <div class="container">
@@ -187,9 +211,9 @@ class UserProfile{
           <div class="row">
             <div class="col-md-3 pt-4">
               <div class="profile-pic text-center">
-                <img src="<?php echo $result['propic'];?>" alt="Profile Image" style="height: 250px; width: 250px;  border-radius: 50%; border: 4px solid green;">
+                <img src="<?php echo $result['propic'];?>" alt="Profile Picture" style="height: 250px; width: 250px;  border-radius: 50%; border: 4px solid green;">
                 <br>
-                <button type="submit" class="btn btn-info btn-sm mt-4">Update Profile</button>
+                <button type="submit" class="btn btn-info btn-sm mt-4" id="update">Update Profile</button>
               </div>
             </div>
             <div class="col-md-7 offset-1 pt-4">
@@ -205,7 +229,7 @@ class UserProfile{
                   <tbody>
                     <tr>
                       <th scope="row">Name</th>
-                      <td><?php echo $result['full_name'];?></td> 
+                      <td><?php echo $result['user_info_id'];?></td> 
                     </tr> 
 
                     <tr>
@@ -240,10 +264,10 @@ class UserProfile{
           </div>
         </div>
       </div>
+        <h5 class="card-header text-center">Appointment Info</h5>
       <div class="tab">
         <button class="tablinks" onclick="openCity(event, 'upcoming')" id="defaultOpen">Upcoming Appoinment</button>
         <button class="tablinks" onclick="openCity(event, 'previous')">Previous Appoinment</button>
-        <button class="tablinks" onclick="openCity(event, 'expire')">Expired Appoinment</button>
       </div>
       <div id="upcoming" class="tabcontent">
             <?php
@@ -291,7 +315,7 @@ class UserProfile{
                           <a href="pdfCreator.php?Aid=<?php echo $info['Appoinment_id']; ?>" class="btn btn-outline-primary" download target="_blank">Download</a>
                         </td>
                         <td>
-                          <a href="?Aid=<?php echo $info['Appoinment_id']; ?>" class="btn btn-outline-danger">Cancle</a>
+                          <a href="?appointmentid=<?php echo $info['Appoinment_id']; ?>" class="btn btn-outline-danger">Cancle</a>
                         </td>
                       </tr>
                     </tbody>
@@ -303,7 +327,7 @@ class UserProfile{
              } 
             ?>
           </div>
-<div id="previous" class="tabcontent">
+          <div id="previous" class="tabcontent">
              <?php
               $status="pending";
               $appointment=$profile->getAppointment($userInfoId,$status);
@@ -321,12 +345,11 @@ class UserProfile{
                     <th>Problem</th>
                     <th>time</th>
                     <th>Status</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
               <?php
                 while ($info = $appointment->fetch(PDO::FETCH_ASSOC)) {
-                    $CheckTime=$profile->CheckTime($appointmentTime);
-                   
                   ?>
                     <tbody>
                       <tr>
@@ -345,70 +368,24 @@ class UserProfile{
                         <td>
                           <?php echo $info['status']; ?>
                         </td>
+                        <td>
+                          <a href="prescription.php?Aid=<?php echo $info['Appoinment_id']; ?>" class="btn btn-outline-primary" download target="_blank">Download</a>
+                        </td>
                       </tr>
                     </tbody>
 
                   <?php
-               
               }
                 ?>
                 </table>
                 <?php
              } 
             ?>
+
           </div>
-           <div id="expire" class="tabcontent">
-            <?php
-              $today=date("Y-m-d");
-              $appointment=$profile->expired($userInfoId,"pending",$today);
-             if ($appointment->rowCount()<1) {
-               ?>
-               <p>No appointment found</p>
-               <?php
-             }else{
-              ?>
-              <table class="table">
-                <thead class="thead-light"> 
-                  <tr>
-                    <th>#</th>
-                    <th>Doctor</th>
-                    <th>Problem</th>
-                    <th>time</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-              <?php
-                while ($info = $appointment->fetch(PDO::FETCH_ASSOC)) {
-                    $appointmentTime=$info['date']." ".$info['time'];                 
-                  ?>
-                    <tbody>
-                      <tr>
-                        <td>
-                          <?php echo $info['Appoinment_id']; ?>
-                        </td>
-                        <td>
-                          <?php echo $info['doctor_name']; ?>
-                        </td>
-                         <td>
-                          <?php echo $info['Problem']; ?>
-                        </td>
-                        <td>
-                          <?php  echo $appointmentTime; ?>
-                        </td>
-                        <td>
-                          <?php echo $info['status']; ?>
-                        </td>
-                        
-                      </tr>
-                    </tbody>
-                  <?php
-                }
-                ?>
-                </table>
-                <?php
-             } 
-            ?>
-          </div>
+          <!--
+          <h5 class="card-header text-center">Account Info</h5>
+        -->
     </div>
     </section>
     
@@ -440,8 +417,14 @@ class UserProfile{
 
           // Get the element with id="defaultOpen" and click on it
         document.getElementById("defaultOpen").click();
+        
+        $("#update").click(function(){
+          swal("Sorry!", "This feature not available now!", "error");
+        });
+        const flashdata=$('.message').data('flashdata');
+    if (flashdata==1) {
+        swal("Success!", "Appointment Cancle successfully", "success");
+    }
 </script>
-   
-    
   </body>
 </html>

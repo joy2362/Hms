@@ -11,7 +11,7 @@
         	<li class="nav-item <?php if($page1=="doctor"){echo "active";}?>"><a href="doctor.php" class="nav-link">Doctor</a></li>
         	<li class="nav-item <?php if($page=="department"){echo "active";}?>"><a href="department.php" class="nav-link">Departments</a></li>
         	<li class="nav-item <?php if($page=="pricing"){echo "active";}?>"><a href="pricing.php" class="nav-link">Pricing</a></li>
-        	<li class="nav-item <?php if($page=="blog"){echo "active";}?>"><a href="blog.php" class="nav-link">Blog</a></li>
+        	<li class="nav-item <?php if($page1=="blog"){echo "active";}?>"><a href="blog.php" class="nav-link">Blog</a></li>
           <li class="nav-item <?php if($page=="contract"){echo "active";}?>"><a href="contact.php" class="nav-link">Contact</a></li>
            <?php
           	$login=Session::get("login");

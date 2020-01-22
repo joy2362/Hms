@@ -263,25 +263,56 @@ if (isset($_GET['action']) && $_GET['action']=="logout") {
             <div class="menu-sidebar__content js-scrollbar1">
                 <nav class="navbar-sidebar">
                     <ul class="list-unstyled navbar__list">
-                        <li class="active has-sub">
+                        <li class="has-sub">
                             <a class="js-arrow" href="hr_profile.php">
-                                <i class="fas fa-tachometer-alt"></i>Dashboard</a>
+                                <i class="fas fa-tachometer-alt"></i>Dashboard </a>
                         </li>
-                        <li>
-                            <a href="chart.html">
-                                <i class="fas fa-chart-bar"></i>Charts</a>
+                            <li class="has-sub">
+                            <a class="js-arrow" href="#">
+                                <i class="far fa-calendar-alt"></i> Attendance <i class="fas fa-caret-down"></i></a>
+                            <ul class="list-unstyled navbar__sub-list js-sub-list">
+                                <li>
+                                    <a href="#">Employee Late Entry</a>
+                                </li>
+                                <li>
+                                    <a href="#">Employee Early Exit</a>
+                                </li>
+                                <li>
+                                    <a href="#">Employee Late Exit</a>
+                                </li>
+                                 <li>
+                                    <a href="#">Late Attendance Reason</a>
+                                </li>
+                            </ul>
                         </li>
-                        <li>
-                            <a href="table.html">
-                                <i class="fas fa-table"></i>Tables</a>
+                        <li class="has-sub">
+                            <a class="js-arrow" href="#">
+                               <i class="fas fa-sign-out-alt"></i>Leave <i class="fas fa-caret-down"></i></a>
+                            <ul class="list-unstyled navbar__sub-list js-sub-list">
+                                <li>
+                                    <a href="#">Leave Request</a>
+                                </li>
+                                <li>
+                                    <a href="#">My Leaves</a>
+                                </li>
+                                <li>
+                                    <a href="#">Application Status</a>
+                                </li>
+                                <li>
+                                    <a href="#">Leave Status</a>
+                                </li>
+                                <li>
+                                    <a href="#">Cancled Leaves</a>
+                                </li>
+                                <li>
+                                    <a href="#">View Alternate Holiday</a>
+                                </li>
+                            </ul>
                         </li>
+                       
                         <li>
-                            <a href="form.html">
-                                <i class="far fa-check-square"></i>Forms</a>
-                        </li>
-                        <li>
-                            <a href="calendar.html">
-                                <i class="fas fa-calendar-alt"></i>Calendar</a>
+                            <a href="#">
+                                <i class="fas fa-calendar-alt"></i>Equepment</a>
                         </li>
                         <li>
                             <a href="map.html">

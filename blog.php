@@ -60,7 +60,7 @@ try {
     include 'topHeader.php';
     ?>
     <?php
-    $page="blog";
+    $page1="blog";
      include 'navbar.php';
     ?>
     <!-- END nav -->
